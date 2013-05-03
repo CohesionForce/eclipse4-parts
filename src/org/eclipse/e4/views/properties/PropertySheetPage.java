@@ -12,11 +12,16 @@
 
 package org.eclipse.e4.views.properties;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.part.IPageBookViewPage;
 import org.eclipse.e4.ui.part.ISaveablePart;
 import org.eclipse.e4.ui.part.Page;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.util.ConfigureColumns;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ISelection;
@@ -272,27 +277,22 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
         viewer.setInput(viewer.getInput());
     }
 
-    /* (non-Javadoc)
-     * Method declared on ISelectionListener.
-     */
-    public void selectionChanged(MPart part, ISelection selection) {
+	public void selectionChanged(
+			ISelection selected,
+			MPart part) {
+
+		if(selected == null)
+			return;
+		
         if (viewer == null) {
 			return;
 		}
 
-        if (sourcePart != null) {
-//        	sourcePart.getSite().getPage().removePartListener(partListener);
-        	sourcePart = null;
-        }
-        
         // change the viewer input since the workbench selection has changed.
-        if (selection instanceof IStructuredSelection) {
-        	sourcePart = part;
-            viewer.setInput(((IStructuredSelection) selection).toArray());
-        }
-
-        if (sourcePart != null) {
-//        	sourcePart.getSite().getPage().addPartListener(partListener);
+        if (selected instanceof IStructuredSelection) {
+            viewer.setInput(((IStructuredSelection) selected).toArray());
+        } else {
+        	viewer.setInput(selected);
         }
     }
 

@@ -18,7 +18,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.e4.ui.di;bundle-version="0.10.1",
  org.eclipse.ui.views;bundle-version="3.6.100",
  org.eclipse.ui;bundle-version="3.103.0",
- com.cohesionforce.logging;bundle-version="1.0.0"
+ com.cohesionforce.logging;bundle-version="1.0.0",
+ org.eclipse.e4.ui.services;bundle-version="0.10.3"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.e4.views.properties
+Export-Package: org.eclipse.e4.views.contentoutline,
+ org.eclipse.e4.views.properties
