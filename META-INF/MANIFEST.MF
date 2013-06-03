@@ -22,5 +22,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.e4.ui.services;bundle-version="0.10.3"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.eclipse.e4.views.contentoutline,
+Export-Package: org.eclipse.e4.ui.dialogs,
+ org.eclipse.e4.ui.part,
+ org.eclipse.e4.views.contentoutline,
  org.eclipse.e4.views.properties
