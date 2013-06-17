@@ -434,6 +434,7 @@ class PropertySheetViewer extends Viewer {
      */
     private TreeItem findItem(IPropertySheetEntry entry) {
         // Iterate through treeItems to find item
+    	//FIXME - Exception popped from here one time, could not reproduce
         TreeItem[] items = tree.getItems();
         for (int i = 0; i < items.length; i++) {
             TreeItem item = items[i];
