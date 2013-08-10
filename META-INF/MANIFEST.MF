@@ -24,6 +24,8 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.e4.ui.dialogs,
  org.eclipse.e4.ui.part,
+ org.eclipse.e4.ui.progress,
  org.eclipse.e4.views.contentoutline,
  org.eclipse.e4.views.properties
 Bundle-Vendor: CohesionForce
+Import-Package: com.ibm.icu.text
