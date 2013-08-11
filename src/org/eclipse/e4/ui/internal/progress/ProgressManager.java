@@ -81,6 +81,8 @@ import org.eclipse.ui.statushandlers.StatusAdapter;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.statushandlers.StatusManager.INotificationListener;
 import org.eclipse.ui.statushandlers.StatusManager.INotificationTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JobProgressManager provides the progress monitor to the job manager and
@@ -88,6 +90,9 @@ import org.eclipse.ui.statushandlers.StatusManager.INotificationTypes;
  */
 public class ProgressManager extends ProgressProvider implements
 		IProgressService {
+
+	private Logger logger = LoggerFactory.getLogger(ProgressManager.class);
+	
 	/**
 	 * A property to determine if the job was run in the dialog. Kept for
 	 * backwards compatability.
@@ -429,6 +434,7 @@ public class ProgressManager extends ProgressProvider implements
 			 * @see org.eclipse.core.runtime.jobs.JobChangeAdapter#aboutToRun(org.eclipse.core.runtime.jobs.IJobChangeEvent)
 			 */
 			public void aboutToRun(IJobChangeEvent event) {
+				logger.trace("aboutToRun: {}", event.getJob().getName());
 				JobInfo info = getJobInfo(event.getJob());
 				refreshJobInfo(info);
 				Iterator startListeners = busyListenersForJob(event.getJob())
@@ -446,6 +452,7 @@ public class ProgressManager extends ProgressProvider implements
 			 * @see org.eclipse.core.runtime.jobs.JobChangeAdapter#done(org.eclipse.core.runtime.jobs.IJobChangeEvent)
 			 */
 			public void done(IJobChangeEvent event) {
+				logger.trace("done: {}", event.getJob().getName());
 				Iterator startListeners = busyListenersForJob(event.getJob())
 						.iterator();
 				while (startListeners.hasNext()) {
@@ -485,6 +492,7 @@ public class ProgressManager extends ProgressProvider implements
 			 * @see org.eclipse.core.runtime.jobs.JobChangeAdapter#scheduled(org.eclipse.core.runtime.jobs.IJobChangeEvent)
 			 */
 			public void scheduled(IJobChangeEvent event) {
+				logger.trace("scheduled: {}", event.getJob().getName());
 				updateFor(event);
 				if (event.getJob().isUser()) {
 					boolean noDialog = shouldRunInBackground();

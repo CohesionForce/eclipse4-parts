@@ -144,6 +144,6 @@ public abstract class UIJob extends Job {
     public Display getDisplay() {
     	if(cachedDisplay != null)
     		return cachedDisplay;
-    	return Display.getCurrent();
+    	return Display.getDefault();
     }
 }
