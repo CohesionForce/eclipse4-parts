@@ -162,7 +162,7 @@ public class ProgressManager extends ProgressProvider implements
 	 * 
 	 * @return JobProgressManager
 	 */
-	public static ProgressManager getInstance() {
+	public static synchronized ProgressManager getInstance() {
 		if (singleton == null) {
 			singleton = new ProgressManager();
 		}

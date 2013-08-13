@@ -108,6 +108,7 @@ class ProgressMonitorFocusJobDialog extends ProgressMonitorJobsDialog {
 				job.setProperty(IProgressConstants.PROPERTY_IN_DIALOG,
 						Boolean.FALSE);
 				finishedRun();
+				//FIXME - Do we need this?
 //				ProgressManagerUtil.animateDown(shellPosition);
 			}
 		});

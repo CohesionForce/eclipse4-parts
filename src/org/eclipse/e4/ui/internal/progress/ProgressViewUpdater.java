@@ -154,7 +154,7 @@ class ProgressViewUpdater implements IJobProgressManagerListener {
      * 
      * @return ProgressViewUpdater
      */
-   static ProgressViewUpdater getSingleton() {
+   static synchronized ProgressViewUpdater getSingleton() {
         if (singleton == null) {
 			singleton = new ProgressViewUpdater();
 		}

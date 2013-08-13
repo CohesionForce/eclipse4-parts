@@ -109,7 +109,7 @@ class GroupInfo extends JobTreeElement implements IProgressMonitor {
 	 */
 	public void beginTask(String name, int totalWork) {
 		if (name == null)
-			name = ProgressMessages.SubTaskInfo_UndefinedTaskName;
+			taskName = ProgressMessages.SubTaskInfo_UndefinedTaskName;
 		else
 			taskName = name;
 		total = totalWork;

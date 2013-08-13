@@ -75,7 +75,6 @@ public abstract class WorkbenchJob extends UIJob {
      * @param event IJobChangeEvent
      */
     public void performDone(IJobChangeEvent event) {
-        //Do nothing by default.
     }
 
     /* (non-Javadoc)

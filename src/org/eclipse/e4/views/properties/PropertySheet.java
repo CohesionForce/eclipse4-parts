@@ -307,6 +307,7 @@ public class PropertySheet extends PageBookView implements ISelectionListener, I
         if (bootstrapSelection != null) {
             IPropertySheetPage page = (IPropertySheetPage) getCurrentPage();
             if (page != null) {
+            	//FIXME - Can't remember why this is commented
 //				page.selectionChanged(part, bootstrapSelection);
 			}
             bootstrapSelection = null;
