@@ -86,8 +86,6 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
 
     private IPropertySourceProvider provider;
 
-    private Clipboard clipboard;
-
 	private MPart sourcePart;
 
 	/**
@@ -171,10 +169,6 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
         if (rootEntry != null) {
             rootEntry.dispose();
             rootEntry = null;
-        }
-        if (clipboard != null) {
-            clipboard.dispose();
-            clipboard = null;
         }
     }
 

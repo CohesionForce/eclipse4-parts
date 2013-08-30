@@ -157,7 +157,7 @@ public abstract class PageBookView {
 	/**
 	 * Selection provider for this view's site
 	 */
-//	private SelectionProvider selectionProvider = new SelectionProvider();
+	// private SelectionProvider selectionProvider = new SelectionProvider();
 
 	/**
 	 * A data structure used to store the information about a single page within
@@ -206,22 +206,20 @@ public abstract class PageBookView {
 				.getProperty(UIEvents.EventTags.ELEMENT);
 		partActivated(activePart);
 	}
-	
+
 	@Inject
 	@Optional
 	public void partHidden(
 			@UIEventTopic(UIEvents.UIElement.TOBERENDERED) Event event,
 			MApplication application) {
 		Object object = event.getProperty(UIEvents.EventTags.ELEMENT);
-		if(object instanceof MPart)
-		{
-			MPart part = (MPart)object;
-			boolean visible = (Boolean)event.getProperty(UIEvents.EventTags.NEW_VALUE);
-			if(visible)
-			{
+		if (object instanceof MPart) {
+			MPart part = (MPart) object;
+			boolean visible = (Boolean) event
+					.getProperty(UIEvents.EventTags.NEW_VALUE);
+			if (visible) {
 				partVisible(part);
-			}
-			else {
+			} else {
 				partHidden(part);
 			}
 		}
@@ -276,7 +274,7 @@ public abstract class PageBookView {
 		Integer count;
 
 		if (!doesPageExist(rec.page)) {
-//			mapPageToSite.put(rec.page, site);
+			// mapPageToSite.put(rec.page, site);
 			count = new Integer(0);
 		} else {
 			count = ((Integer) mapPageToNumRecs.get(rec.page));
@@ -326,7 +324,7 @@ public abstract class PageBookView {
 		showPageRec(defaultPageRec);
 
 		// Listen to part activation events.
-		
+
 		showBootstrapPart();
 	}
 
@@ -632,7 +630,7 @@ public abstract class PageBookView {
 		int newCount = ((Integer) mapPageToNumRecs.get(rec.page)).intValue() - 1;
 
 		if (newCount == 0) {
-			Object site = mapPageToSite.remove(rec.page);
+			mapPageToSite.remove(rec.page);
 			mapPageToNumRecs.remove(rec.page);
 
 			Control control = rec.page.getControl();
@@ -706,18 +704,21 @@ public abstract class PageBookView {
 
 		// Show new page.
 		activeRec = pageRec;
-		Control pageControl = activeRec.page.getControl();
-		if (pageControl != null && !pageControl.isDisposed()) {
+		if (activeRec != null) {
+			if (activeRec.page != null) {
+				Control pageControl = activeRec.page.getControl();
+				if (pageControl != null && !pageControl.isDisposed()) {
 
-			// Verify that the page control is not disposed
-			// If we are closing, it may have already been disposed
-			book.showPage(pageControl);
+					// Verify that the page control is not disposed
+					// If we are closing, it may have already been disposed
+					book.showPage(pageControl);
 
-			// add our selection listener
-			//FIXME - removed selection listener
+					// add our selection listener
+					// FIXME - removed selection listener
+				}
+			}
 		}
 	}
-
 
 	/**
 	 * Make sure that the part is not considered if it is hidden.
@@ -732,7 +733,6 @@ public abstract class PageBookView {
 		hiddenPart = part;
 		showPageRec(defaultPageRec);
 	}
-
 
 	/**
 	 * Make sure that the part is not considered if it is hidden.

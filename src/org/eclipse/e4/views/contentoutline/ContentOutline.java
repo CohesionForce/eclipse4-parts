@@ -266,6 +266,7 @@ public class ContentOutline extends PageBookView implements ISelectionListener {
 		if (bootstrapSelection != null) {
 			IPropertySheetPage page = (IPropertySheetPage) getCurrentPage();
 			if (page != null) {
+				//FIXME - Can't remember why this is commented
 				// page.selectionChanged(part, bootstrapSelection);
 			}
 			bootstrapSelection = null;
