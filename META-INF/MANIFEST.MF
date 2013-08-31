@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.9.0",
  org.eclipse.ui;bundle-version="3.105.0",
  com.cohesionforce.logging;bundle-version="1.0.0",
  org.eclipse.e4.ui.services;bundle-version="1.0.0",
- org.eclipse.e4.ui.model.workbench;bundle-version="1.0.0"
+ org.eclipse.e4.ui.model.workbench;bundle-version="1.0.0",
+ com.ibm.icu;bundle-version="50.1.1"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.e4.ui.dialogs,
