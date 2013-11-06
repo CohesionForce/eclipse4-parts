@@ -281,6 +281,11 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
         if (viewer == null) {
 			return;
 		}
+        
+        if (viewer.getControl().isDisposed())
+        {
+        	return;
+        }
 
         // change the viewer input since the workbench selection has changed.
         if (selected instanceof IStructuredSelection) {
