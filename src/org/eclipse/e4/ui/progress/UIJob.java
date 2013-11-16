@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.internal.progress.ProgressMessages;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.internal.misc.UIStats;
 import org.eclipse.e4.ui.progress.UIJob;
 
 /**
@@ -90,14 +89,12 @@ public abstract class UIJob extends Job {
                     if (monitor.isCanceled()) {
 						result = Status.CANCEL_STATUS;
 					} else {
-                       	UIStats.start(UIStats.UI_JOB, getName());
                         result = runInUIThread(monitor);
                     }
 
                 } catch(Throwable t){
                 	throwable = t;
                 } finally {
-               		UIStats.end(UIStats.UI_JOB, UIJob.this, getName());
                     if (result == null) {
 						result = new Status(IStatus.ERROR,
                                 "org.eclipse.e4.ui.part", IStatus.ERROR,
