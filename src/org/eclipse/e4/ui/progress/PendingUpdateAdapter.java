@@ -13,7 +13,6 @@ package org.eclipse.e4.ui.progress;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.e4.ui.internal.progress.ProgressMessages;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.model.IWorkbenchAdapter;
 
 /**
  * The PendingUpdateAdapter is a convenience object that can be used
@@ -21,7 +20,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
  * 
  * @since 3.2
  */
-public class PendingUpdateAdapter implements IWorkbenchAdapter, IAdaptable {
+public class PendingUpdateAdapter implements IAdaptable {
 
     private boolean removed = false;
 
@@ -51,10 +50,8 @@ public class PendingUpdateAdapter implements IWorkbenchAdapter, IAdaptable {
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
-    public Object getAdapter(Class adapter) {
-        if (adapter == IWorkbenchAdapter.class) {
-			return this;
-		}
+    @SuppressWarnings("rawtypes")
+	public Object getAdapter(Class adapter) {
         return null;
     }
 

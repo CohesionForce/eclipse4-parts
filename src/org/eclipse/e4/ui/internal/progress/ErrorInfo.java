@@ -135,7 +135,7 @@ public class ErrorInfo extends JobTreeElement {
 	 * 
 	 * @see org.eclipse.e4.ui.internal.progress.JobTreeElement#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Object arg0) {
+	public int compareTo(ErrorInfo arg0) {
 		if (arg0 instanceof ErrorInfo) {
 			// Order ErrorInfo by time received
 			long otherTimestamp = ((ErrorInfo) arg0).timestamp;

@@ -26,10 +26,6 @@ import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-import org.eclipse.ui.internal.TrimUtil;
-import org.eclipse.ui.internal.WorkbenchMessages;
-import org.eclipse.ui.internal.WorkbenchWindow;
-import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.e4.ui.internal.progress.AnimationItem;
 import org.eclipse.e4.ui.internal.progress.AnimationManager;
 import org.eclipse.e4.ui.internal.progress.JobInfo;
@@ -43,15 +39,13 @@ import org.eclipse.e4.ui.internal.progress.ProgressViewerLabelProvider;
  * The ProgressRegion is class for the region of the workbench where the
  * progress line and the animation item are shown.
  */
-public class ProgressRegion implements IWindowTrim {
+public class ProgressRegion {
     ProgressCanvasViewer viewer;
 
     ProgressAnimationItem animationItem;
 
     Composite region;
 
-    WorkbenchWindow workbenchWindow;
-    
 	private int fWidthHint = SWT.DEFAULT;
 	
 	private int fHeightHint = SWT.DEFAULT;
@@ -80,8 +74,7 @@ public class ProgressRegion implements IWindowTrim {
      *            The WorkbenchWindow this is in.
      * @return Control
      */
-    public Control createContents(Composite parent, WorkbenchWindow window) {
-        workbenchWindow = window;
+    public Control createContents(Composite parent) {
 
         // Test whether or not 'advanced' graphics are available
         // If not then we'll 'force' the ProgressBar to always be
@@ -102,9 +95,9 @@ public class ProgressRegion implements IWindowTrim {
 			public Point computeSize(int wHint, int hHint, boolean changed) {
 				Point size = super.computeSize(wHint, hHint, changed);
 				if (isHorizontal(side))
-					size.y = TrimUtil.TRIM_DEFAULT_HEIGHT;
+					size.y = 20;
 				else {
-					size.x = TrimUtil.TRIM_DEFAULT_HEIGHT;
+					size.x = 20;
 				}
 				return size;
 			}
@@ -222,7 +215,7 @@ public class ProgressRegion implements IWindowTrim {
      * Process the double click event.
      */
     public void processDoubleClick() {
-        ProgressManagerUtil.openProgressView(workbenchWindow);
+//        ProgressManagerUtil.openProgressView();
     }
 
 	/* (non-Javadoc)
@@ -271,7 +264,7 @@ public class ProgressRegion implements IWindowTrim {
 			boolean animating = animationItem.animationRunning();
 	        AnimationManager.getInstance().removeItem(animationItem);
 			region.dispose();
-			createContents(parent, workbenchWindow);
+			createContents(parent);
 			if (animating)
 				animationItem.animationStart();
 		}
@@ -285,7 +278,7 @@ public class ProgressRegion implements IWindowTrim {
 	}
 
 	public String getDisplayName() {
-		return WorkbenchMessages.TrimCommon_Progress_TrimName;
+		return "Progress";
 	}
 
 	/* (non-Javadoc)

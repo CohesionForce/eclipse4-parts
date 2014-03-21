@@ -10,38 +10,17 @@
  *******************************************************************************/
 package org.eclipse.e4.ui.internal.progress;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.internal.AnimationEngine;
-import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.internal.WorkbenchWindow;
-import org.eclipse.ui.internal.misc.StatusUtil;
-import org.eclipse.e4.ui.internal.progress.ProgressManager;
-import org.eclipse.e4.ui.internal.progress.ProgressMessages;
-import org.eclipse.e4.ui.internal.progress.ProgressMonitorJobsDialog;
-import org.eclipse.e4.ui.internal.progress.ProgressRegion;
-import org.eclipse.ui.internal.util.BundleUtility;
-import org.eclipse.ui.views.IViewDescriptor;
 
 /**
  * The ProgressUtil is a class that contains static utility methods used for the
@@ -61,31 +40,10 @@ public class ProgressManagerUtil {
 
 	static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-	static final QualifiedName INFRASTRUCTURE_PROPERTY = new QualifiedName(
-			WorkbenchPlugin.PI_WORKBENCH, "INFRASTRUCTURE_PROPERTY");//$NON-NLS-1$
-
 	private static String ellipsis = ProgressMessages.ProgressFloatingWindow_EllipsisValue;
 
-	/**
-	 * Return a status for the exception.
-	 * 
-	 * @param exception
-	 * @return IStatus
-	 */
-	static IStatus exceptionStatus(Throwable exception) {
-		return StatusUtil.newStatus(IStatus.ERROR,
-				exception.getMessage() == null ? "" : exception.getMessage(), //$NON-NLS-1$
-				exception);
-	}
-
-	/**
-	 * Log the exception for debugging.
-	 * 
-	 * @param exception
-	 */
-	static void logException(Throwable exception) {
-		BundleUtility.log("org.eclipse.e4.ui.part", exception);
-	}
+	static final QualifiedName INFRASTRUCTURE_PROPERTY = new QualifiedName(
+			"org.eclipse.ui", "INFRASTRUCTURE_PROPERTY");//$NON-NLS-1$
 
 	// /**
 	// * Sets the label provider for the viewer.
@@ -112,30 +70,6 @@ public class ProgressManagerUtil {
 				return ((Comparable) e1).compareTo(e2);
 			}
 		};
-	}
-
-	/**
-	 * Open the progress view in the supplied window.
-	 * 
-	 * @param window
-	 */
-	static void openProgressView(WorkbenchWindow window) {
-		IWorkbenchPage page = window.getActivePage();
-		if (page == null) {
-			return;
-		}
-		try {
-			IViewDescriptor reference = WorkbenchPlugin.getDefault()
-					.getViewRegistry()
-					.find(IProgressConstants.PROGRESS_VIEW_ID);
-
-			if (reference == null) {
-				return;
-			}
-			page.showView(IProgressConstants.PROGRESS_VIEW_ID);
-		} catch (PartInitException exception) {
-			logException(exception);
-		}
 	}
 
 	/**
@@ -452,28 +386,5 @@ public class ProgressManagerUtil {
 				return getDefaultParent();
 			}
 		};
-	}
-
-	/**
-	 * Get the icons root for the progress support.
-	 * 
-	 * @return URL
-	 */
-	public static URL getIconsRoot() {
-		return BundleUtility.find("org.eclipse.e4.ui.part",
-				ProgressManager.PROGRESS_FOLDER);
-	}
-
-	/**
-	 * Return the location of the progress spinner.
-	 * 
-	 * @return URL or <code>null</code> if it cannot be found
-	 */
-	public static URL getProgressSpinnerLocation() {
-		try {
-			return new URL(getIconsRoot(), "progress_spinner.gif");//$NON-NLS-1$
-		} catch (MalformedURLException e) {
-			return null;
-		}
 	}
 }

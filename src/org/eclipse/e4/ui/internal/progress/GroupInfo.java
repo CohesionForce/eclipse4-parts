@@ -30,7 +30,7 @@ import org.eclipse.e4.ui.internal.progress.ProgressMessages;
 
 class GroupInfo extends JobTreeElement implements IProgressMonitor {
 
-	private List infos = new ArrayList();
+	private List<JobInfo> infos = new ArrayList<JobInfo>();
 
 	private Object lock = new Object();
 
@@ -138,9 +138,9 @@ class GroupInfo extends JobTreeElement implements IProgressMonitor {
 	 * finished and the receiver is not being kept then remove it.
 	 */
 	private void updateInProgressManager() {
-		Iterator infoIterator = infos.iterator();
+		Iterator<JobInfo> infoIterator = infos.iterator();
 		while (infoIterator.hasNext()) {
-			JobInfo next = (JobInfo) infoIterator.next();
+			JobInfo next = infoIterator.next();
 			if (!(next.getJob().getState() == Job.NONE)) {
 				ProgressManager.getInstance().refreshGroup(this);
 				return;

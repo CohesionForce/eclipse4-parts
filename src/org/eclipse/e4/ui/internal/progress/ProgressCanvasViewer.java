@@ -32,7 +32,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.ui.internal.TrimUtil;
 import org.eclipse.e4.ui.internal.progress.AbstractProgressViewer;
 
 /**
@@ -185,7 +184,7 @@ public class ProgressCanvasViewer extends AbstractProgressViewer {
                 Transform transform = null;
                 if (orientation == SWT.VERTICAL) {
 	                transform = new Transform(event.display);
-	            	transform.translate(TrimUtil.TRIM_DEFAULT_HEIGHT, 0);
+	            	transform.translate(20, 0);
 	            	transform.rotate(90);
                 }
                 ILabelProvider labelProvider = (ILabelProvider) getLabelProvider();

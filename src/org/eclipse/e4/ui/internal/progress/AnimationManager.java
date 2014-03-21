@@ -18,19 +18,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.ui.progress.WorkbenchJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.e4.ui.internal.progress.AnimationItem;
-import org.eclipse.e4.ui.internal.progress.AnimationManager;
-import org.eclipse.e4.ui.internal.progress.GroupInfo;
-import org.eclipse.e4.ui.internal.progress.IAnimationProcessor;
-import org.eclipse.e4.ui.internal.progress.IJobProgressManagerListener;
-import org.eclipse.e4.ui.internal.progress.JobInfo;
-import org.eclipse.e4.ui.internal.progress.ProgressAnimationProcessor;
-import org.eclipse.e4.ui.internal.progress.ProgressManager;
-import org.eclipse.e4.ui.internal.progress.ProgressMessages;
-import org.eclipse.e4.ui.progress.WorkbenchJob;
 
 /**
  * The AnimationManager is the class that keeps track of the animation items to
@@ -141,7 +132,7 @@ public class AnimationManager {
 
     private IJobProgressManagerListener getProgressListener() {
         return new IJobProgressManagerListener() {
-            Set jobs = Collections.synchronizedSet(new HashSet());
+            Set<Job> jobs = Collections.synchronizedSet(new HashSet<Job>());
 
             /*
              * (non-Javadoc)

@@ -19,16 +19,6 @@ import java.util.Set;
 import org.eclipse.core.commands.common.EventManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.ui.progress.IProgressConstants;
-import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.e4.ui.internal.progress.FinishedJobs;
-import org.eclipse.e4.ui.internal.progress.GroupInfo;
-import org.eclipse.e4.ui.internal.progress.IJobProgressManagerListener;
-import org.eclipse.e4.ui.internal.progress.JobInfo;
-import org.eclipse.e4.ui.internal.progress.JobTreeElement;
-import org.eclipse.e4.ui.internal.progress.ProgressManager;
-import org.eclipse.e4.ui.internal.progress.ProgressManagerUtil;
-import org.eclipse.e4.ui.internal.progress.TaskInfo;
 
 /**
  * This singleton remembers all JobTreeElements that should be preserved (e.g.
@@ -60,9 +50,9 @@ public class FinishedJobs extends EventManager {
 
 	private IJobProgressManagerListener listener;
 
-	private HashSet keptjobinfos = new HashSet();
+	private HashSet<Object> keptjobinfos = new HashSet<Object>();
 
-	private HashMap finishedTime = new HashMap();
+	private HashMap<Object, Long> finishedTime = new HashMap<Object, Long>();
 
 	private static JobTreeElement[] EMPTY_INFOS;
 
@@ -203,20 +193,6 @@ public class FinishedJobs extends EventManager {
 		}
 	}
 
-	static void disposeAction(JobTreeElement jte) {
-		if (jte.isJobInfo()) {
-			JobInfo ji = (JobInfo) jte;
-			Job job = ji.getJob();
-			if (job != null) {
-				Object prop = job
-						.getProperty(IProgressConstants.ACTION_PROPERTY);
-				if (prop instanceof ActionFactory.IWorkbenchAction) {
-					((ActionFactory.IWorkbenchAction) prop).dispose();
-				}
-			}
-		}
-	}
-
 	private JobTreeElement[] findJobsToRemove(JobTreeElement info) {
 
 		if (info.isJobInfo()) {
@@ -227,7 +203,7 @@ public class FinishedJobs extends EventManager {
 				Object prop = myJob
 						.getProperty(ProgressManagerUtil.KEEPONE_PROPERTY);
 				if (prop instanceof Boolean && ((Boolean) prop).booleanValue()) {
-					ArrayList found = null;
+					ArrayList<JobTreeElement> found = null;
 					JobTreeElement[] all;
 					synchronized (keptjobinfos) {
 						all = (JobTreeElement[]) keptjobinfos
@@ -240,7 +216,7 @@ public class FinishedJobs extends EventManager {
 							if (job != null && job != myJob
 									&& job.belongsTo(myJob)) {
 								if (found == null) {
-									found = new ArrayList();
+									found = new ArrayList<JobTreeElement>();
 								}
 								found.add(jte);
 							}
@@ -318,7 +294,6 @@ public class FinishedJobs extends EventManager {
 			if (keptjobinfos.remove(jte)) {
 				removed = true;
 				finishedTime.remove(jte);
-				disposeAction(jte);
 
 				// delete all elements that have jte as their direct or indirect
 				// parent
@@ -329,9 +304,6 @@ public class FinishedJobs extends EventManager {
 							.getParent();
 					if (parent != null) {
 						if (parent == jte || parent.getParent() == jte) {
-							if (keptjobinfos.remove(jtes[i])) {
-								disposeAction(jtes[i]);
-							}
 							finishedTime.remove(jtes[i]);
 						}
 					}
@@ -397,11 +369,6 @@ public class FinishedJobs extends EventManager {
 	 */
 	public void clearAll() {
 		synchronized (keptjobinfos) {
-			JobTreeElement[] all = (JobTreeElement[]) keptjobinfos
-					.toArray(new JobTreeElement[keptjobinfos.size()]);
-			for (int i = 0; i < all.length; i++) {
-				disposeAction(all[i]);
-			}
 			keptjobinfos.clear();
 			finishedTime.clear();
 		}
@@ -418,7 +385,7 @@ public class FinishedJobs extends EventManager {
 	 * Return the set of kept jobs.
 	 * @return Set
 	 */
-	Set getKeptAsSet() {
+	Set<Object> getKeptAsSet() {
 		return keptjobinfos;
 	}
 }

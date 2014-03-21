@@ -56,12 +56,6 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.internal.IPreferenceConstants;
-import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.internal.dialogs.EventLoopProgressMonitor;
-import org.eclipse.ui.internal.dialogs.WorkbenchDialogBlockedHandler;
-import org.eclipse.ui.internal.misc.Policy;
 import org.eclipse.e4.ui.internal.progress.FinishedJobs;
 import org.eclipse.e4.ui.internal.progress.GroupInfo;
 import org.eclipse.e4.ui.internal.progress.IJobBusyListener;
@@ -74,13 +68,8 @@ import org.eclipse.e4.ui.internal.progress.ProgressMessages;
 import org.eclipse.e4.ui.internal.progress.ProgressMonitorFocusJobDialog;
 import org.eclipse.e4.ui.internal.progress.ProgressMonitorJobsDialog;
 import org.eclipse.e4.ui.internal.progress.ProgressViewUpdater;
-import org.eclipse.e4.ui.internal.progress.StatusAdapterHelper;
 import org.eclipse.e4.ui.internal.progress.TaskInfo;
 import org.eclipse.e4.ui.progress.WorkbenchJob;
-import org.eclipse.ui.statushandlers.StatusAdapter;
-import org.eclipse.ui.statushandlers.StatusManager;
-import org.eclipse.ui.statushandlers.StatusManager.INotificationListener;
-import org.eclipse.ui.statushandlers.StatusManager.INotificationTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,12 +138,6 @@ public class ProgressManager extends ProgressProvider implements
 	// table
 	private Hashtable imageKeyTable = new Hashtable();
 
-	/*
-	 * A listener that allows for removing error jobs & indicators when errors
-	 * are handled.
-	 */
-	private final INotificationListener notificationListener;
-
 	private static final String IMAGE_KEY = "org.eclipse.e4.ui.progress.images"; //$NON-NLS-1$
 
 	/**
@@ -176,8 +159,6 @@ public class ProgressManager extends ProgressProvider implements
 		if (singleton == null) {
 			return;
 		}
-		StatusManager.getManager().removeListener(
-				singleton.notificationListener);
 		singleton.shutdown();
 	}
 
@@ -376,17 +357,13 @@ public class ProgressManager extends ProgressProvider implements
 	 */
 	ProgressManager() {
 
-		Dialog.setBlockedHandler(new WorkbenchDialogBlockedHandler());
-
 		setUpImages();
 
 		changeListener = createChangeListener();
 
-		notificationListener = createNotificationListener();
 
 		Job.getJobManager().setProgressProvider(this);
 		Job.getJobManager().addJobChangeListener(this.changeListener);
-		StatusManager.getManager().addListener(notificationListener);
 	}
 
 	private void setUpImages() {
@@ -404,20 +381,6 @@ public class ProgressManager extends ProgressProvider implements
 //		} catch (MalformedURLException e) {
 //			ProgressManagerUtil.logException(e);
 //		}
-	}
-
-	private INotificationListener createNotificationListener() {
-
-		return new StatusManager.INotificationListener(){
-
-			public void statusManagerNotified(int type, StatusAdapter[] adapters) {
-				if(type == INotificationTypes.HANDLED){
-					FinishedJobs.getInstance().removeErrorJobs();
-					StatusAdapterHelper.getInstance().clear();
-				}
-			}
-			
-		};
 	}
 
 	/**
@@ -464,26 +427,6 @@ public class ProgressManager extends ProgressProvider implements
 				final JobInfo info = getJobInfo(event.getJob());
 				removeJobInfo(info);
 
-				if (event.getResult() != null
-						&& event.getResult().getSeverity() == IStatus.ERROR) {
-					StatusAdapter statusAdapter = new StatusAdapter(event
-							.getResult());
-					statusAdapter.addAdapter(Job.class, event.getJob());
-
-					if (event
-							.getJob()
-							.getProperty(
-									IProgressConstants.NO_IMMEDIATE_ERROR_PROMPT_PROPERTY) == Boolean.TRUE) {
-						statusAdapter
-								.setProperty(
-										IProgressConstants.NO_IMMEDIATE_ERROR_PROMPT_PROPERTY,
-										Boolean.TRUE);
-						StatusAdapterHelper.getInstance().putStatusAdapter(
-								info, statusAdapter);
-					}
-
-					StatusManager.getManager().handle(statusAdapter, StatusManager.SHOW);
-				}
 			}
 
 			/*
@@ -641,7 +584,7 @@ public class ProgressManager extends ProgressProvider implements
 		if (display != null
 				&& !display.isDisposed()
 				&& (display.getThread() == Thread.currentThread())) {
-			return new EventLoopProgressMonitor(new NullProgressMonitor());
+//			return new EventLoopProgressMonitor(new NullProgressMonitor());
 		}
 		return super.getDefaultMonitor();
 	}
@@ -852,8 +795,6 @@ public class ProgressManager extends ProgressProvider implements
 	 * @return boolean <code>true</code> if it is never displayed.
 	 */
 	private boolean isInfrastructureJob(Job job) {
-		if (Policy.DEBUG_SHOW_ALL_JOBS)
-			return false;
 		return job.getProperty(ProgressManagerUtil.INFRASTRUCTURE_PROPERTY) != null;
 	}
 
@@ -949,10 +890,10 @@ public class ProgressManager extends ProgressProvider implements
 			stream.close();
 			return result;
 		} catch (FileNotFoundException exception) {
-			ProgressManagerUtil.logException(exception);
+			logger.error(exception.toString());
 			return null;
 		} catch (IOException exception) {
-			ProgressManagerUtil.logException(exception);
+			logger.error(exception.toString());
 			return null;
 		}
 	}
@@ -1296,9 +1237,6 @@ public class ProgressManager extends ProgressProvider implements
 		for (int i = 0; i < jobsToCheck.length; i++) {
 			Job job = (Job) jobsToCheck[i];
 			if (checkForStaleness(job)) {
-				if (Policy.DEBUG_STALE_JOBS) {
-					WorkbenchPlugin.log("Stale Job " + job.getName()); //$NON-NLS-1$
-				}
 				pruned = true;
 			}
 		}
@@ -1326,8 +1264,7 @@ public class ProgressManager extends ProgressProvider implements
 	 * @return <code>true</code> if the dialog should not be shown.
 	 */
 	private boolean shouldRunInBackground() {
-		return WorkbenchPlugin.getDefault().getPreferenceStore().getBoolean(
-				IPreferenceConstants.RUN_IN_BACKGROUND);
+		return true;
 	}
 
 	/**
@@ -1359,7 +1296,7 @@ public class ProgressManager extends ProgressProvider implements
 		public void run() {
 			IJobManager manager = Job.getJobManager();
 			try {
-				manager.beginRule(rule, getEventLoopMonitor());
+				manager.beginRule(rule, null);
 				context.run(false, false, runnable);
 			} catch (InvocationTargetException e) {
 				status = new Status(IStatus.ERROR, "org.eclipse.e4.ui.part", e
@@ -1375,28 +1312,6 @@ public class ProgressManager extends ProgressProvider implements
 			}
 		}
 
-		/**
-		 * Get a progress monitor that forwards to an event loop monitor.
-		 * Override #setBlocked() so that we always open the blocked dialog.
-		 * 
-		 * @return the monitor on the event loop
-		 */
-		private IProgressMonitor getEventLoopMonitor() {
-
-
-			return new EventLoopProgressMonitor(new NullProgressMonitor()) {
-
-				public void setBlocked(IStatus reason) {
-
-					// Set a shell to open with as we want to create
-					// this
-					// even if there is a modal shell.
-					Dialog.getBlockedHandler().showBlocked(
-							ProgressManagerUtil.getDefaultParent(), this,
-							reason, getTaskName());
-				}
-			};
-		}
 		public IStatus getStatus() {
 			return status;
 		}

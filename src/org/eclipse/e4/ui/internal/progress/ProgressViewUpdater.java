@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.e4.ui.internal.progress.GroupInfo;
 import org.eclipse.e4.ui.internal.progress.IJobProgressManagerListener;
 import org.eclipse.e4.ui.internal.progress.IProgressUpdateCollector;
@@ -28,7 +27,6 @@ import org.eclipse.e4.ui.internal.progress.ProgressManager;
 import org.eclipse.e4.ui.internal.progress.ProgressManagerUtil;
 import org.eclipse.e4.ui.internal.progress.ProgressMessages;
 import org.eclipse.e4.ui.internal.progress.ProgressViewUpdater;
-import org.eclipse.ui.internal.util.PrefUtil;
 import org.eclipse.e4.ui.progress.WorkbenchJob;
 
 /**

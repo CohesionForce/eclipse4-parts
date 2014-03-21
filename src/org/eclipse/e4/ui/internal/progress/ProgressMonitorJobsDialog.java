@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.internal.misc.Policy;
 import org.eclipse.e4.ui.internal.progress.DetailedProgressViewer;
 import org.eclipse.e4.ui.internal.progress.ProgressLabelProvider;
 import org.eclipse.e4.ui.internal.progress.ProgressManager;
@@ -121,7 +120,7 @@ public class ProgressMonitorJobsDialog extends ProgressMonitorDialog {
             detailsButton.setText(ProgressMessages.ProgressMonitorJobsDialog_DetailsTitle);
         } else {
             //Abort if there are no jobs visible
-            if (ProgressManager.getInstance().getRootElements(Policy.DEBUG_SHOW_ALL_JOBS).length == 0) {
+            if (ProgressManager.getInstance().getRootElements(false).length == 0) {
                 detailsButton.setEnabled(false);
                 return;
             }

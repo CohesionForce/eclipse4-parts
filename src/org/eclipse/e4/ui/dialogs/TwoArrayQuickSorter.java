@@ -27,17 +27,17 @@ import org.eclipse.core.runtime.Assert;
     /**
      * Default comparator.
      */
-    public static final class StringComparator implements Comparator {
+    public static final class StringComparator implements Comparator<String> {
         private boolean fIgnoreCase;
 
         StringComparator(boolean ignoreCase) {
             fIgnoreCase = ignoreCase;
         }
 
-        public int compare(Object left, Object right) {
-            return fIgnoreCase ? ((String) left)
-                    .compareToIgnoreCase((String) right) : ((String) left)
-                    .compareTo((String) right);
+        public int compare(String left, String right) {
+            return fIgnoreCase ? left
+                    .compareToIgnoreCase(right) : left
+                    .compareTo(right);
         }
     }
 

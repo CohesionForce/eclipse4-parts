@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * <code>Save As</code> actions.
  * 
  * @since 2.1
- * @see org.eclipse.ui.IEditorPart  
  */
 public interface ISaveablePart {
 

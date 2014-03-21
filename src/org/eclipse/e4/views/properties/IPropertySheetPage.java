@@ -11,7 +11,6 @@
 package org.eclipse.e4.views.properties;
 
 import org.eclipse.e4.ui.part.IPage;
-import org.eclipse.ui.ISelectionListener;
 
 /**
  * Interface for a property sheet page that appears in a property sheet view.

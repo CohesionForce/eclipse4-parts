@@ -13,8 +13,6 @@ package org.eclipse.e4.views.properties;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ui.views.properties.IPropertySheetEntry;
-
 /**
  * A category in a PropertySheet used to group <code>IPropertySheetEntry</code>
  * entries so they are displayed together.
@@ -22,7 +20,7 @@ import org.eclipse.ui.views.properties.IPropertySheetEntry;
 /*package*/class PropertySheetCategory {
     private String categoryName;
 
-    private List entries = new ArrayList();
+    private List<IPropertySheetEntry> entries = new ArrayList<IPropertySheetEntry>();
 
     private boolean shouldAutoExpand = true;
 
@@ -86,6 +84,6 @@ import org.eclipse.ui.views.properties.IPropertySheetEntry;
      * Doing so allows us to reuse this category entry.
      */
     public void removeAllEntries() {
-        entries = new ArrayList();
+        entries.clear();
     }
 }

@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.inject.Inject;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -30,7 +33,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.ui.internal.IWorkbenchHelpContextIds;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.internal.progress.AbstractProgressViewer;
 import org.eclipse.e4.ui.internal.progress.DetailedProgressViewer;
 import org.eclipse.e4.ui.internal.progress.FinishedJobs;
@@ -42,7 +47,10 @@ import org.eclipse.e4.ui.internal.progress.ProgressMessages;
  * The DetailedProgressViewer is a viewer that shows the details of all in
  * progress job or jobs that are finished awaiting user input.
  * 
- * @since 3.2
+ * This viewer must be injected with an IEclipseContext in order to pass it
+ * along to composites for each Job.
+ * 
+ * @since 4.3
  * 
  */
 public class DetailedProgressViewer extends AbstractProgressViewer {
@@ -55,6 +63,9 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 	private ScrolledComposite scrolled;
 
 	private Composite noEntryArea;
+	
+	@Inject
+	@Optional private IEclipseContext context;
 
 	/**
 	 * Create a new instance of the receiver with a control that is a child of
@@ -145,7 +156,7 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 		ViewerComparator sorter = getComparator();
 
 		// Use a Set in case we are getting something added that exists
-		Set newItems = new HashSet(elements.length);
+		Set<Object> newItems = new HashSet<Object>(elements.length);
 
 		Control[] existingChildren = control.getChildren();
 		for (int i = 0; i < existingChildren.length; i++) {
@@ -202,6 +213,11 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 		final ProgressInfoItem item = new ProgressInfoItem(control, SWT.NONE,
 				info);
 
+		if(context != null)
+		{
+			ContextInjectionFactory.inject(item, context);
+		}
+		
 		item.setIndexListener(new ProgressInfoItem.IndexListener() {
 			/*
 			 * (non-Javadoc)
@@ -352,8 +368,8 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 	 * 
 	 * @see org.eclipse.jface.viewers.StructuredViewer#getSelectionFromWidget()
 	 */
-	protected List getSelectionFromWidget() {
-		return new ArrayList(0);
+	protected List<Object> getSelectionFromWidget() {
+		return new ArrayList<Object>(0);
 	}
 
 	/*

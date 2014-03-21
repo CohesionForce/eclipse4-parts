@@ -12,43 +12,25 @@ package org.eclipse.e4.ui.internal.progress;
 
 import javax.annotation.PostConstruct;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.internal.IWorkbenchHelpContextIds;
-import org.eclipse.ui.internal.WorkbenchImages;
-import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.internal.progress.DetailedProgressViewer;
-import org.eclipse.e4.ui.internal.progress.FinishedJobs;
-import org.eclipse.e4.ui.internal.progress.JobInfo;
-import org.eclipse.e4.ui.internal.progress.JobTreeElement;
-import org.eclipse.e4.ui.internal.progress.JobsViewPreferenceDialog;
-import org.eclipse.e4.ui.internal.progress.ProgressManager;
-import org.eclipse.e4.ui.internal.progress.ProgressManagerUtil;
-import org.eclipse.e4.ui.internal.progress.ProgressMessages;
-import org.eclipse.e4.ui.internal.progress.ProgressViewerContentProvider;
-import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.preferences.ViewPreferencesAction;
 
 /**
  * The ProgressView is the class that shows the details of the current workbench
  * progress.
  */
-public class ProgressView extends ViewPart implements IViewPart {
+public class ProgressView {
 
 	DetailedProgressViewer viewer;
 
@@ -63,8 +45,11 @@ public class ProgressView extends ViewPart implements IViewPart {
 	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	@PostConstruct
-	public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent, IEclipseContext context) {
+
 		viewer = new DetailedProgressViewer(parent, SWT.MULTI | SWT.H_SCROLL);
+		ContextInjectionFactory.inject(viewer, context);
+		
 		viewer.setComparator(ProgressManagerUtil.getProgressViewerComparator());
 
 		viewer.getControl().setLayoutData(
@@ -116,7 +101,7 @@ public class ProgressView extends ViewPart implements IViewPart {
 				}
 			}
 		});
-		menuMgr.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		menuMgr.add(new Separator("seperator"));
 //		getSite().registerContextMenu(menuMgr, viewer);
 		viewer.getControl().setMenu(menu);
 	}
@@ -217,16 +202,16 @@ public class ProgressView extends ViewPart implements IViewPart {
 		};
 		clearAllAction
 				.setToolTipText(ProgressMessages.NewProgressView_RemoveAllJobsToolTip);
-		ImageDescriptor id = WorkbenchImages
-				.getWorkbenchImageDescriptor("/elcl16/progress_remall.gif"); //$NON-NLS-1$
-		if (id != null) {
-			clearAllAction.setImageDescriptor(id);
-		}
-		id = WorkbenchImages
-				.getWorkbenchImageDescriptor("/dlcl16/progress_remall.gif"); //$NON-NLS-1$
-		if (id != null) {
-			clearAllAction.setDisabledImageDescriptor(id);
-		}
+//		ImageDescriptor id = WorkbenchImages
+//				.getWorkbenchImageDescriptor("/elcl16/progress_remall.gif"); //$NON-NLS-1$
+//		if (id != null) {
+//			clearAllAction.setImageDescriptor(id);
+//		}
+//		id = WorkbenchImages
+//				.getWorkbenchImageDescriptor("/dlcl16/progress_remall.gif"); //$NON-NLS-1$
+//		if (id != null) {
+//			clearAllAction.setDisabledImageDescriptor(id);
+//		}
 	}
 
 	/**
