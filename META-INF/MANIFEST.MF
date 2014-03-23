@@ -44,5 +44,6 @@ Import-Package: com.cohesionforce.e4.ui.addons,
  org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
  org.eclipse.swt.widgets,
- org.eclipse.ui.services,
- org.eclipse.ui.views.properties
+ org.eclipse.ui.services
+Bundle-Activator: org.eclipse.e4.ui.part.Activator
+Bundle-ActivationPolicy: lazy

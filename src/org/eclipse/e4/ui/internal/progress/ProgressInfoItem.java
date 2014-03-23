@@ -11,6 +11,7 @@
 
 package org.eclipse.e4.ui.internal.progress;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,11 +22,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.part.Activator;
 import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.e4.ui.progress.IProgressConstants2;
 import org.eclipse.jface.action.IAction;
@@ -61,7 +64,6 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.cohesionforce.e4.ui.addons.WorkbenchImages;
 import com.ibm.icu.text.DateFormat;
 
 /**
@@ -142,47 +144,48 @@ public class ProgressInfoItem extends Composite {
 	private Link link;
 
 	@PostConstruct
-	private void createImages(WorkbenchImages workbenchImages) {
+	private void createImages()
+			throws IOException {
 		ImageRegistry registry = JFaceResources.getImageRegistry();
 
 		if (registry.get(STOP_IMAGE_KEY) == null) {
-			JFaceResources
-					.getImageRegistry()
-					.put(STOP_IMAGE_KEY,
-							workbenchImages
-									.getWorkbenchImageDescriptor("elcl16/progress_stop.gif"));//$NON-NLS-1$
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/elcl16/progress_stop.gif")); //$NON-NLS-1$
+
+			JFaceResources.getImageRegistry().put(STOP_IMAGE_KEY,
+					ImageDescriptor.createFromURL(url));
 		}
 
 		if (registry.get(DISABLED_STOP_IMAGE_KEY) == null) {
-			JFaceResources
-					.getImageRegistry()
-					.put(DISABLED_STOP_IMAGE_KEY,
-							workbenchImages
-									.getWorkbenchImageDescriptor("dlcl16/progress_stop.gif"));//$NON-NLS-1$
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/dlcl16/progress_stop.gif")); //$NON-NLS-1$
+			JFaceResources.getImageRegistry().put(DISABLED_STOP_IMAGE_KEY,
+					ImageDescriptor.createFromURL(url));
 		}
 
 		if (registry.get(DEFAULT_JOB_KEY) == null) {
-			JFaceResources
-					.getImageRegistry()
-					.put(DEFAULT_JOB_KEY,
-							workbenchImages
-									.getWorkbenchImageDescriptor("progress/progress_task.gif")); //$NON-NLS-1$
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/progress/progress_task.gif")); //$NON-NLS-1$
+			JFaceResources.getImageRegistry().put(DEFAULT_JOB_KEY,
+					ImageDescriptor.createFromURL(url));
 		}
 
 		if (registry.get(CLEAR_FINISHED_JOB_KEY) == null) {
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/elcl16/progress_rem.gif")); //$NON-NLS-1$
 			JFaceResources
 					.getImageRegistry()
 					.put(CLEAR_FINISHED_JOB_KEY,
-							workbenchImages
-									.getWorkbenchImageDescriptor("elcl16/progress_rem.gif")); //$NON-NLS-1$
+							ImageDescriptor.createFromURL(url));
 		}
 
 		if (registry.get(DISABLED_CLEAR_FINISHED_JOB_KEY) == null) {
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/dlcl16/progress_rem.gif")); //$NON-NLS-1$
 			JFaceResources
 					.getImageRegistry()
 					.put(DISABLED_CLEAR_FINISHED_JOB_KEY,
-							workbenchImages
-									.getWorkbenchImageDescriptor("dlcl16/progress_rem.gif")); //$NON-NLS-1$
+							ImageDescriptor.createFromURL(url));
 		}
 
 		// Mac has different Gamma value
@@ -299,13 +302,7 @@ public class ProgressInfoItem extends Composite {
 		progressLabel.setLayoutData(progressData);
 
 		mouseListener = new MouseAdapter() {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see
-			 * org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt
-			 * .events.MouseEvent)
-			 */
+			@Override
 			public void mouseDown(MouseEvent e) {
 				if (indexListener != null) {
 					indexListener.select();

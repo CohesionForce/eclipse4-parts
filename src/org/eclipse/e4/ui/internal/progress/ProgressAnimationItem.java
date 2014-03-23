@@ -10,13 +10,19 @@
  *******************************************************************************/
 package org.eclipse.e4.ui.internal.progress;
 
+import java.io.IOException;
+import java.net.URL;
+
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.ui.part.Activator;
 import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.e4.ui.progress.IProgressConstants2;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.Util;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -129,24 +135,25 @@ public class ProgressAnimationItem extends AnimationItem implements
 		if (prop instanceof ParameterizedCommand) {
 			ParameterizedCommand command = (ParameterizedCommand) prop;
 			Exception exception = null;
-			
-			//FIXME - find a way to execute the command
-//			try {
-			//	service.executeCommand(command, null);
-				removeTopElement(ji);
-//			} catch (ExecutionException e) {
-//				exception = e;
-//			} catch (NotDefinedException e) {
-//				exception = e;
-//			} catch (NotEnabledException e) {
-//				exception = e;
-//			} catch (NotHandledException e) {
-//				exception = e;
-//			}
+
+			// FIXME - find a way to execute the command
+			// try {
+			// service.executeCommand(command, null);
+			removeTopElement(ji);
+			// } catch (ExecutionException e) {
+			// exception = e;
+			// } catch (NotDefinedException e) {
+			// exception = e;
+			// } catch (NotEnabledException e) {
+			// exception = e;
+			// } catch (NotHandledException e) {
+			// exception = e;
+			// }
 
 			if (exception != null) {
-				Status status = new Status(IStatus.ERROR, "org.eclipse.e4.ui.part",
-						exception.getMessage(), exception);
+				Status status = new Status(IStatus.ERROR,
+						"org.eclipse.e4.ui.part", exception.getMessage(),
+						exception);
 			}
 
 		}
@@ -225,32 +232,45 @@ public class ProgressAnimationItem extends AnimationItem implements
 	private void initButton(Image im, final String tt) {
 		toolButton.setImage(im);
 		toolButton.setToolTipText(tt);
-    	toolbar.setVisible(true);
+		toolbar.setVisible(true);
 		toolbar.getParent().layout(); // must layout
-		
-    	toolbar.getAccessible().addAccessibleListener(new AccessibleAdapter() {
-        	public void getName(AccessibleEvent e) {
-        		e.result = tt;
-        	}
-        });
+
+		toolbar.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			public void getName(AccessibleEvent e) {
+				e.result = tt;
+			}
+		});
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.e4.ui.internal.progress.AnimationItem#createAnimationItem(org.eclipse.swt.widgets.Composite)
+	 * @see
+	 * org.eclipse.e4.ui.internal.progress.AnimationItem#createAnimationItem
+	 * (org.eclipse.swt.widgets.Composite)
 	 */
 	protected Control createAnimationItem(Composite parent) {
 
 		if (okImage == null) {
 			Display display = parent.getDisplay();
-			//FIXME - need to load images
-//			noneImage = WorkbenchImages.getWorkbenchImageDescriptor(
-//					"progress/progress_none.gif").createImage(display); //$NON-NLS-1$
-//			okImage = WorkbenchImages.getWorkbenchImageDescriptor(
-//					"progress/progress_ok.gif").createImage(display); //$NON-NLS-1$
-//			errorImage = WorkbenchImages.getWorkbenchImageDescriptor(
-//					"progress/progress_error.gif").createImage(display); //$NON-NLS-1$
+			try {
+				URL url = FileLocator.toFileURL(Activator.getContext()
+						.getBundle()
+						.getEntry("icons/full/progress/progress_none.gif")); //$NON-NLS-1$
+				noneImage = ImageDescriptor.createFromURL(url).createImage(
+						display);
+				url = FileLocator.toFileURL(Activator.getContext().getBundle()
+						.getEntry("icons/full/progress/progress_ok.gif")); //$NON-NLS-1$
+				okImage = ImageDescriptor.createFromURL(url).createImage(
+						display);
+				url = FileLocator.toFileURL(Activator.getContext().getBundle()
+						.getEntry("icons/full/progress/progress_error.gif")); //$NON-NLS-1$
+				errorImage = ImageDescriptor.createFromURL(url).createImage(
+						display);
+
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 
 		top = new Composite(parent, SWT.NULL);

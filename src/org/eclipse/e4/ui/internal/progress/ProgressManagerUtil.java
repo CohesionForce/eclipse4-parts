@@ -60,12 +60,7 @@ public class ProgressManagerUtil {
 	 */
 	static ViewerComparator getProgressViewerComparator() {
 		return new ViewerComparator() {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer,
-			 *      java.lang.Object, java.lang.Object)
-			 */
+			@Override
 			public int compare(Viewer testViewer, Object e1, Object e2) {
 				return ((Comparable) e1).compareTo(e2);
 			}

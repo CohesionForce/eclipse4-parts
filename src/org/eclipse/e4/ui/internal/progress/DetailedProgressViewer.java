@@ -147,11 +147,7 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.e4.ui.internal.progress.AbstractProgressViewer#add(java.lang.Object[])
-	 */
+	@Override
 	public void add(Object[] elements) {
 		ViewerComparator sorter = getComparator();
 
@@ -213,37 +209,26 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 		final ProgressInfoItem item = new ProgressInfoItem(control, SWT.NONE,
 				info);
 
+		// TODO - there may be a better way to pass the context along the the new items
 		if(context != null)
 		{
 			ContextInjectionFactory.inject(item, context);
 		}
 		
 		item.setIndexListener(new ProgressInfoItem.IndexListener() {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.eclipse.e4.ui.internal.progress.ProgressInfoItem.IndexListener#selectNext()
-			 */
+			@Override
 			public void selectNext() {
 				DetailedProgressViewer.this.selectNext(item);
 
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.eclipse.e4.ui.internal.progress.ProgressInfoItem.IndexListener#selectPrevious()
-			 */
+			@Override
 			public void selectPrevious() {
 				DetailedProgressViewer.this.selectPrevious(item);
 
 			}
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.eclipse.e4.ui.internal.progress.ProgressInfoItem.IndexListener#select()
-			 */
+			@Override
 			public void select() {
 
 				Control[] children = control.getChildren();
@@ -312,20 +297,12 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.StructuredViewer#doFindInputItem(java.lang.Object)
-	 */
+	@Override
 	protected Widget doFindInputItem(Object element) {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.StructuredViewer#doFindItem(java.lang.Object)
-	 */
+	@Override
 	protected Widget doFindItem(Object element) {
 		Control[] existingChildren = control.getChildren();
 		for (int i = 0; i < existingChildren.length; i++) {
@@ -340,12 +317,7 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.StructuredViewer#doUpdateItem(org.eclipse.swt.widgets.Widget,
-	 *      java.lang.Object, boolean)
-	 */
+	@Override
 	protected void doUpdateItem(Widget item, Object element, boolean fullMap) {
 		if (usingElementMap()) {
 			unmapElement(item);
@@ -354,41 +326,24 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 		add(new Object[] { element });
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.Viewer#getControl()
-	 */
+	@Override
 	public Control getControl() {
 		return scrolled;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.StructuredViewer#getSelectionFromWidget()
-	 */
+	@Override
 	protected List<Object> getSelectionFromWidget() {
 		return new ArrayList<Object>(0);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.Viewer#inputChanged(java.lang.Object,
-	 *      java.lang.Object)
-	 */
+	@Override
 	protected void inputChanged(Object input, Object oldInput) {
 		super.inputChanged(input, oldInput);
 		refreshAll();
 		updateForShowingProgress();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.StructuredViewer#internalRefresh(java.lang.Object)
-	 */
+	@Override
 	protected void internalRefresh(Object element) {
 		if (element == null) {
 			return;
@@ -413,11 +368,7 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 		scrolled.setMinSize(size);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.e4.ui.internal.progress.AbstractProgressViewer#remove(java.lang.Object[])
-	 */
+	@Override
 	public void remove(Object[] elements) {
 
 		for (int i = 0; i < elements.length; i++) {
@@ -453,21 +404,12 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 		updateForShowingProgress();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.StructuredViewer#reveal(java.lang.Object)
-	 */
+	@Override
 	public void reveal(Object element) {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.viewers.StructuredViewer#setSelectionToWidget(java.util.List,
-	 *      boolean)
-	 */
+	@Override
 	protected void setSelectionToWidget(List l, boolean reveal) {
 
 	}

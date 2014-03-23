@@ -10,17 +10,27 @@
  *******************************************************************************/
 package org.eclipse.e4.ui.internal.progress;
 
-import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.net.URL;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.part.Activator;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -38,18 +48,15 @@ public class ProgressView {
 
 	Action clearAllAction;
 
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
+	@Inject
+	ESelectionService selectionService;
+	
 	@PostConstruct
 	public void createPartControl(Composite parent, IEclipseContext context) {
 
 		viewer = new DetailedProgressViewer(parent, SWT.MULTI | SWT.H_SCROLL);
 		ContextInjectionFactory.inject(viewer, context);
-		
+
 		viewer.setComparator(ProgressManagerUtil.getProgressViewerComparator());
 
 		viewer.getControl().setLayoutData(
@@ -61,15 +68,17 @@ public class ProgressView {
 		initContextMenu();
 		initPulldownMenu();
 		initToolBar();
-		//FIXME - do this the E4 way
-//		getSite().setSelectionProvider(viewer);
+		
+		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				selectionService.setSelection(event.getSelection());
+			}
+			
+		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWorkbenchPart#setFocus()
-	 */
 	@Focus
 	public void setFocus() {
 		if (viewer != null) {
@@ -81,7 +90,8 @@ public class ProgressView {
 	 * Sets the content provider for the viewer.
 	 */
 	protected void initContentProvider() {
-		ProgressViewerContentProvider provider = new ProgressViewerContentProvider(viewer, true ,true);
+		ProgressViewerContentProvider provider = new ProgressViewerContentProvider(
+				viewer, true, true);
 		viewer.setContentProvider(provider);
 		viewer.setInput(ProgressManager.getInstance());
 	}
@@ -102,32 +112,35 @@ public class ProgressView {
 			}
 		});
 		menuMgr.add(new Separator("seperator"));
-//		getSite().registerContextMenu(menuMgr, viewer);
+		// TODO - what do we do for the site context menu?
+		// getSite().registerContextMenu(menuMgr, viewer);
 		viewer.getControl().setMenu(menu);
 	}
 
 	private void initPulldownMenu() {
-//		IMenuManager menuMgr = getViewSite().getActionBars().getMenuManager();
-//		menuMgr.add(clearAllAction);
-//		menuMgr.add(new ViewPreferencesAction() {
-//			/*
-//			 * (non-Javadoc)
-//			 * 
-//			 * @see org.eclipse.ui.internal.preferences.ViewPreferencesAction#openViewPreferencesDialog()
-//			 */
-//			public void openViewPreferencesDialog() {
-//				new JobsViewPreferenceDialog(viewer.getControl().getShell())
-//						.open();
-//
-//			}
-//		});
-//
+		// IMenuManager menuMgr =
+		// getViewSite().getActionBars().getMenuManager();
+		// menuMgr.add(clearAllAction);
+		// menuMgr.add(new ViewPreferencesAction() {
+		// /*
+		// * (non-Javadoc)
+		// *
+		// * @see
+		// org.eclipse.ui.internal.preferences.ViewPreferencesAction#openViewPreferencesDialog()
+		// */
+		// public void openViewPreferencesDialog() {
+		// new JobsViewPreferenceDialog(viewer.getControl().getShell())
+		// .open();
+		//
+		// }
+		// });
+		//
 	}
 
 	private void initToolBar() {
-//		IActionBars bars = getViewSite().getActionBars();
-//		IToolBarManager tm = bars.getToolBarManager();
-//		tm.add(clearAllAction);
+		// IActionBars bars = getViewSite().getActionBars();
+		// IToolBarManager tm = bars.getToolBarManager();
+		// tm.add(clearAllAction);
 	}
 
 	/**
@@ -138,15 +151,10 @@ public class ProgressView {
 	 */
 	private IStructuredSelection getSelection() {
 		// If the provider has not been set yet move on.
-		//FIXME - do this with E4
-//		ISelectionProvider provider = getSite().getSelectionProvider();
-//		if (provider == null) {
-//			return null;
-//		}
-//		ISelection currentSelection = provider.getSelection();
-//		if (currentSelection instanceof IStructuredSelection) {
-//			return (IStructuredSelection) currentSelection;
-//		}
+		Object currentSelection = selectionService.getSelection();
+		if (currentSelection instanceof IStructuredSelection) {
+			return (IStructuredSelection) currentSelection;
+		}
 		return null;
 	}
 
@@ -173,11 +181,7 @@ public class ProgressView {
 	 */
 	private void createCancelAction() {
 		cancelAction = new Action(ProgressMessages.ProgressView_CancelAction) {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.eclipse.jface.action.Action#run()
-			 */
+			@Override
 			public void run() {
 				viewer.cancelSelection();
 			}
@@ -191,27 +195,30 @@ public class ProgressView {
 	private void createClearAllAction() {
 		clearAllAction = new Action(
 				ProgressMessages.ProgressView_ClearAllAction) {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.eclipse.jface.action.Action#run()
-			 */
+			
+			@Override
 			public void run() {
 				FinishedJobs.getInstance().clearAll();
 			}
 		};
 		clearAllAction
 				.setToolTipText(ProgressMessages.NewProgressView_RemoveAllJobsToolTip);
-//		ImageDescriptor id = WorkbenchImages
-//				.getWorkbenchImageDescriptor("/elcl16/progress_remall.gif"); //$NON-NLS-1$
-//		if (id != null) {
-//			clearAllAction.setImageDescriptor(id);
-//		}
-//		id = WorkbenchImages
-//				.getWorkbenchImageDescriptor("/dlcl16/progress_remall.gif"); //$NON-NLS-1$
-//		if (id != null) {
-//			clearAllAction.setDisabledImageDescriptor(id);
-//		}
+		try {
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/elcl16/progress_remall.gif")); //$NON-NLS-1$
+			ImageDescriptor id = ImageDescriptor.createFromURL(url);
+			if (id != null) {
+				clearAllAction.setImageDescriptor(id);
+			}
+			url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/dlcl16/progress_remall.gif"));
+			id = ImageDescriptor.createFromURL(url);
+			if (id != null) {
+				clearAllAction.setDisabledImageDescriptor(id);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
