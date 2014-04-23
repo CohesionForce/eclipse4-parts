@@ -11,20 +11,15 @@
 
 package org.eclipse.e4.ui.internal.progress;
 
-import com.ibm.icu.text.DateFormat;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.NotEnabledException;
-import org.eclipse.core.commands.NotHandledException;
+
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.e4.ui.progress.IProgressConstants2;
@@ -36,7 +31,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.util.Util;
-import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -60,18 +54,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.WorkbenchImages;
-import org.eclipse.ui.internal.decorators.ContributingPluginDecorator;
-import org.eclipse.e4.ui.internal.progress.FinishedJobs;
-import org.eclipse.e4.ui.internal.progress.GroupInfo;
-import org.eclipse.e4.ui.internal.progress.JobInfo;
-import org.eclipse.e4.ui.internal.progress.JobTreeElement;
-import org.eclipse.e4.ui.internal.progress.ProgressManager;
-import org.eclipse.e4.ui.internal.progress.ProgressMessages;
-import org.eclipse.e4.ui.internal.progress.TaskInfo;
-import org.eclipse.ui.statushandlers.StatusManager;
+
+import com.ibm.icu.text.DateFormat;
 
 /**
  * ProgressInfoItem is the item used to show jobs.
