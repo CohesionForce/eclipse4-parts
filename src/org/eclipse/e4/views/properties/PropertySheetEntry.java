@@ -25,10 +25,6 @@ import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
-import org.eclipse.ui.views.properties.IPropertySource2;
-import org.eclipse.ui.views.properties.IPropertySourceProvider;
 
 /**
  * <code>PropertySheetEntry</code> is an implementation of
