@@ -12,24 +12,14 @@
 
 package org.eclipse.e4.views.properties;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.part.IPageBookViewPage;
 import org.eclipse.e4.ui.part.ISaveablePart;
 import org.eclipse.e4.ui.part.Page;
-import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.util.ConfigureColumns;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.window.SameShellProvider;
-import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -37,16 +27,8 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.HelpEvent;
-import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.ui.views.properties.IPropertySheetEntry;
-import org.eclipse.ui.views.properties.IPropertySourceProvider;
-import org.eclipse.ui.views.properties.PropertySheetEntry;
 
 /**
  * The standard implementation of property sheet page which presents
@@ -76,7 +58,7 @@ import org.eclipse.ui.views.properties.PropertySheetEntry;
  * @see IPropertySource
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class PropertySheetPage extends Page implements IPropertySheetPage, IAdaptable, IPageBookViewPage {
+public class PropertySheetPage extends Page implements IPropertySheetPage, IAdaptable {
 
     private PropertySheetViewer viewer;
     
@@ -178,7 +160,8 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
      * 
      * @since 3.2
      */
-    public Object getAdapter(Class adapter) {
+    @SuppressWarnings("rawtypes")
+	public Object getAdapter(Class adapter) {
 		if (ISaveablePart.class.equals(adapter)) {
 			return getSaveablePart();
 		}
@@ -281,6 +264,11 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
         if (viewer == null) {
 			return;
 		}
+        
+        if (viewer.getControl().isDisposed())
+        {
+        	return;
+        }
 
         // change the viewer input since the workbench selection has changed.
         if (selected instanceof IStructuredSelection) {

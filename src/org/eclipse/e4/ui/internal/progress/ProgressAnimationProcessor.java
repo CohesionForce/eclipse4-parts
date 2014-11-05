@@ -40,7 +40,7 @@ class ProgressAnimationProcessor implements IAnimationProcessor {
         manager = animationManager;
     }
 
-    List items = Collections.synchronizedList(new ArrayList());
+    List<ProgressAnimationItem> items = Collections.synchronizedList(new ArrayList<ProgressAnimationItem>());
 
     /*
      * (non-Javadoc)
@@ -66,31 +66,19 @@ class ProgressAnimationProcessor implements IAnimationProcessor {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.e4.ui.internal.progress.IAnimationProcessor#addItem(org.eclipse.e4.ui.internal.progress.AnimationItem)
-     */
+    @Override
     public void addItem(AnimationItem item) {
         Assert.isTrue(item instanceof ProgressAnimationItem);
-        items.add(item);
+        items.add((ProgressAnimationItem)item);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.e4.ui.internal.progress.IAnimationProcessor#removeItem(org.eclipse.e4.ui.internal.progress.AnimationItem)
-     */
+    @Override
     public void removeItem(AnimationItem item) {
         Assert.isTrue(item instanceof ProgressAnimationItem);
         items.remove(item);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.e4.ui.internal.progress.IAnimationProcessor#hasItems()
-     */
+    @Override
     public boolean hasItems() {
         return items.size() > 0;
     }
@@ -105,24 +93,15 @@ class ProgressAnimationProcessor implements IAnimationProcessor {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.e4.ui.internal.progress.IAnimationProcessor#animationStarted(org.eclipse.core.runtime.IProgressMonitor)
-     */
+    @Override
     public void animationStarted() {
         AnimationItem[] animationItems = getAnimationItems();
         for (int i = 0; i < animationItems.length; i++) {
             animationItems[i].animationStart();
         }
-
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.e4.ui.internal.progress.IAnimationProcessor#getPreferredWidth()
-     */
+    @Override
     public int getPreferredWidth() {
         return 30;
     }
@@ -139,9 +118,7 @@ class ProgressAnimationProcessor implements IAnimationProcessor {
         return animationItems;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.e4.ui.internal.progress.IAnimationProcessor#animationFinished()
-     */
+    @Override
     public void animationFinished() {
         AnimationItem[] animationItems = getAnimationItems();
         for (int i = 0; i < animationItems.length; i++) {
@@ -150,9 +127,7 @@ class ProgressAnimationProcessor implements IAnimationProcessor {
 
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.e4.ui.internal.progress.IAnimationProcessor#isProcessorJob(org.eclipse.core.runtime.jobs.Job)
-     */
+    @Override
     public boolean isProcessorJob(Job job) {
         // We have no jobs
         return false;

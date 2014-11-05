@@ -14,15 +14,7 @@ package org.eclipse.e4.views.contentoutline;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.internal.views.ViewsPlugin;
-import org.eclipse.ui.part.IContributedContentsView;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -30,12 +22,13 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MInputPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.part.IPage;
-import org.eclipse.e4.ui.part.IPageBookViewPage;
+import org.eclipse.e4.ui.part.MessagePage;
 import org.eclipse.e4.ui.part.PageBook;
 import org.eclipse.e4.ui.part.PageBookView;
-import org.eclipse.e4.ui.part.MessagePage;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.views.properties.IPropertySheetPage;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Composite;
 import org.osgi.service.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * @noinstantiate This class is not intended to be instantiated by clients.
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class ContentOutline extends PageBookView implements ISelectionListener {
+public class ContentOutline extends PageBookView {
 
 	Logger logger = LoggerFactory.getLogger(ContentOutline.class);
 	/**
@@ -113,7 +106,6 @@ public class ContentOutline extends PageBookView implements ISelectionListener {
 	 */
 	protected IPage createDefaultPage(PageBook book) {
 		MessagePage page = new MessagePage();
-		initPage(page);
 		page.createControl(book);
 		page.setMessage(defaultText);
 		return page;
@@ -135,7 +127,6 @@ public class ContentOutline extends PageBookView implements ISelectionListener {
 		super.setFocus();
 	}
 
-	@SuppressWarnings("restriction")
 	@Inject
 	@Optional
 	public void partActivation(
@@ -192,16 +183,17 @@ public class ContentOutline extends PageBookView implements ISelectionListener {
 	protected PageRec doCreatePage(MPart part) {
 		logger.debug("Creating outline page for {}", part.getElementId());
 		// Try to get an outline page.
-		IContentOutlinePage page = (IContentOutlinePage) ViewsPlugin.getAdapter(
-				part.getObject(), IContentOutlinePage.class, false);
-		if (page != null) {
-			if (page instanceof IPageBookViewPage) {
-				initPage((IPageBookViewPage) page);
+		if (part.getObject() != null && part.getObject() instanceof IAdaptable) {
+			IContentOutlinePage page = (IContentOutlinePage) ((IAdaptable) part
+					.getObject()).getAdapter(IContentOutlinePage.class);
+			
+			if (page != null) {
+				page.createControl(getPageBook());
+				return new PageRec(part, (IPage) page);
+			} else {
+				logger.debug("No content outline found for {}",
+						part.getElementId());
 			}
-			page.createControl(getPageBook());
-			return new PageRec(part, (IPage) page);
-		} else {
-			logger.debug("No content outline found for {}", part.getElementId());
 		}
 		// There is no content outline
 		return null;
@@ -266,17 +258,11 @@ public class ContentOutline extends PageBookView implements ISelectionListener {
 		if (bootstrapSelection != null) {
 			IPropertySheetPage page = (IPropertySheetPage) getCurrentPage();
 			if (page != null) {
-				//FIXME - Can't remember why this is commented
+				// FIXME - Can't remember why this is commented
 				// page.selectionChanged(part, bootstrapSelection);
 			}
 			bootstrapSelection = null;
 		}
-	}
-
-	@Override
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**

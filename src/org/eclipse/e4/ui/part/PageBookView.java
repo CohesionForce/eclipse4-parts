@@ -14,45 +14,20 @@ package org.eclipse.e4.ui.part;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.common.EventManager;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.util.SafeRunnable;
-import org.eclipse.jface.viewers.IPostSelectionProvider;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IPartListener2;
-import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPartReference;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.SubActionBars;
-import org.eclipse.ui.internal.WorkbenchPage;
-import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.internal.util.Util;
 import org.osgi.service.event.Event;
 
 /**
@@ -127,21 +102,15 @@ public abstract class PageBookView {
 	private PageRec defaultPageRec;
 
 	/**
-	 * Map from parts to part records (key type: <code>IWorkbenchPart</code>;
+	 * Map from parts to part records (key type: <code>MPart</code>;
 	 * value type: <code>PartRec</code>).
 	 */
-	private Map mapPartToRec = new HashMap();
-
-	/**
-	 * Map from pages to view sites Note that view sites were not added to page
-	 * recs to avoid breaking binary compatibility with previous builds
-	 */
-	private Map mapPageToSite = new HashMap();
+	private HashMap<MPart, PageRec> mapPartToRec = new HashMap<MPart, PageRec>();
 
 	/**
 	 * Map from pages to the number of pageRecs actively associated with a page.
 	 */
-	private Map mapPageToNumRecs = new HashMap();
+	private Map<IPage, Integer> mapPageToNumRecs = new HashMap<IPage, Integer>();
 
 	/**
 	 * The page rec which provided the current page or <code>null</code>
@@ -195,7 +164,6 @@ public abstract class PageBookView {
 		}
 	}
 
-	@SuppressWarnings("restriction")
 	@Inject
 	@Optional
 	public void partActivation(
@@ -274,34 +242,12 @@ public abstract class PageBookView {
 		Integer count;
 
 		if (!doesPageExist(rec.page)) {
-			// mapPageToSite.put(rec.page, site);
-			count = new Integer(0);
+			count = 0;
 		} else {
-			count = ((Integer) mapPageToNumRecs.get(rec.page));
+			count = mapPageToNumRecs.get(rec.page);
 		}
 
-		mapPageToNumRecs.put(rec.page, new Integer(count.intValue() + 1));
-	}
-
-	/**
-	 * Initializes the given page with a page site.
-	 * <p>
-	 * Subclasses should call this method after the page is created but before
-	 * creating its controls.
-	 * </p>
-	 * <p>
-	 * Subclasses may override
-	 * </p>
-	 * 
-	 * @param page
-	 *            The page to initialize
-	 */
-	protected void initPage(IPageBookViewPage page) {
-		try {
-			page.init();
-		} catch (PartInitException e) {
-			WorkbenchPlugin.log(getClass(), "initPage", e); //$NON-NLS-1$
-		}
+		mapPageToNumRecs.put(rec.page, count+1);
 	}
 
 	/**
@@ -341,13 +287,13 @@ public abstract class PageBookView {
 			// check for null since the default page may not have
 			// been created (ex. perspective never visible)
 			defaultPageRec.page.dispose();
-			Object site = mapPageToSite.remove(defaultPageRec.page);
 			mapPageToNumRecs.remove(defaultPageRec.page);
 
 			defaultPageRec = null;
 		}
-		Map clone = (Map) ((HashMap) mapPartToRec).clone();
-		Iterator itr = clone.values().iterator();
+		@SuppressWarnings("unchecked")
+		HashMap<MPart, PageRec> clone = (HashMap<MPart, PageRec>)mapPartToRec.clone();
+		Iterator<PageRec> itr = clone.values().iterator();
 		while (itr.hasNext()) {
 			PageRec rec = (PageRec) itr.next();
 			removePage(rec);
@@ -405,12 +351,17 @@ public abstract class PageBookView {
 	 * <code>IAdaptable</code> method delegates to the current page, if it
 	 * implements <code>IAdaptable</code>.
 	 */
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class key) {
 		// delegate to the current page, if supported
 		IPage page = getCurrentPage();
-		Object adapter = Util.getAdapter(page, key);
-		if (adapter != null) {
-			return adapter;
+		Object adapter = null;
+		if(page instanceof IAdaptable)
+		{
+			adapter = ((IAdaptable)page).getAdapter(key);
+			if (adapter != null) {
+				return adapter;
+			}
 		}
 		// if the page did not find the adapter, look for one provided by
 		// this view before delegating to super.
@@ -436,6 +387,7 @@ public abstract class PageBookView {
 	 *         this object does not have an adapter for the given class
 	 * @since 3.2
 	 */
+	@SuppressWarnings("rawtypes")
 	protected Object getViewAdapter(Class adapter) {
 		return null;
 	}
@@ -522,7 +474,7 @@ public abstract class PageBookView {
 	 * @return the corresponding page record, or <code>null</code> if not found
 	 */
 	protected PageRec getPageRec(IPage page) {
-		Iterator itr = mapPartToRec.values().iterator();
+		Iterator<PageRec> itr = mapPartToRec.values().iterator();
 		while (itr.hasNext()) {
 			PageRec rec = (PageRec) itr.next();
 			if (rec.page == page) {
@@ -630,7 +582,6 @@ public abstract class PageBookView {
 		int newCount = ((Integer) mapPageToNumRecs.get(rec.page)).intValue() - 1;
 
 		if (newCount == 0) {
-			mapPageToSite.remove(rec.page);
 			mapPageToNumRecs.remove(rec.page);
 
 			Control control = rec.page.getControl();

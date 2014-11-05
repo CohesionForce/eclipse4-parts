@@ -11,22 +11,31 @@
 
 package org.eclipse.e4.ui.internal.progress;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.part.Activator;
 import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.e4.ui.progress.IProgressConstants2;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.resource.ResourceManager;
@@ -54,17 +63,20 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.internal.WorkbenchImages;
 
 import com.ibm.icu.text.DateFormat;
 
 /**
  * ProgressInfoItem is the item used to show jobs.
  * 
- * @since 3.1
+ * @since 4.3
  * 
  */
 public class ProgressInfoItem extends Composite {
+
+	@Inject
+	@Optional
+	private EHandlerService handlerService;
 
 	static String STOP_IMAGE_KEY = "org.eclipse.e4.ui.internal.progress.PROGRESS_STOP"; //$NON-NLS-1$
 
@@ -86,7 +98,7 @@ public class ProgressInfoItem extends Composite {
 
 	ToolItem actionButton;
 
-	List taskEntries = new ArrayList(0);
+	List<Link> taskEntries = new ArrayList<Link>(0);
 
 	private ProgressBar progressBar;
 
@@ -131,53 +143,61 @@ public class ProgressInfoItem extends Composite {
 
 	private Link link;
 
-	static {
-		JFaceResources
-				.getImageRegistry()
-				.put(
-						STOP_IMAGE_KEY,
-						WorkbenchImages
-								.getWorkbenchImageDescriptor("elcl16/progress_stop.gif"));//$NON-NLS-1$
+	@PostConstruct
+	private void createImages()
+			throws IOException {
+		ImageRegistry registry = JFaceResources.getImageRegistry();
 
-		JFaceResources
-				.getImageRegistry()
-				.put(
-						DISABLED_STOP_IMAGE_KEY,
-						WorkbenchImages
-								.getWorkbenchImageDescriptor("dlcl16/progress_stop.gif"));//$NON-NLS-1$
+		if (registry.get(STOP_IMAGE_KEY) == null) {
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/elcl16/progress_stop.gif")); //$NON-NLS-1$
 
-		JFaceResources
-				.getImageRegistry()
-				.put(
-						DEFAULT_JOB_KEY,
-						WorkbenchImages
-								.getWorkbenchImageDescriptor("progress/progress_task.gif")); //$NON-NLS-1$
+			JFaceResources.getImageRegistry().put(STOP_IMAGE_KEY,
+					ImageDescriptor.createFromURL(url));
+		}
 
-		JFaceResources
-				.getImageRegistry()
-				.put(
-						CLEAR_FINISHED_JOB_KEY,
-						WorkbenchImages
-								.getWorkbenchImageDescriptor("elcl16/progress_rem.gif")); //$NON-NLS-1$
+		if (registry.get(DISABLED_STOP_IMAGE_KEY) == null) {
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/dlcl16/progress_stop.gif")); //$NON-NLS-1$
+			JFaceResources.getImageRegistry().put(DISABLED_STOP_IMAGE_KEY,
+					ImageDescriptor.createFromURL(url));
+		}
 
-		JFaceResources
-				.getImageRegistry()
-				.put(
-						DISABLED_CLEAR_FINISHED_JOB_KEY,
-						WorkbenchImages
-								.getWorkbenchImageDescriptor("dlcl16/progress_rem.gif")); //$NON-NLS-1$
+		if (registry.get(DEFAULT_JOB_KEY) == null) {
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/progress/progress_task.gif")); //$NON-NLS-1$
+			JFaceResources.getImageRegistry().put(DEFAULT_JOB_KEY,
+					ImageDescriptor.createFromURL(url));
+		}
+
+		if (registry.get(CLEAR_FINISHED_JOB_KEY) == null) {
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/elcl16/progress_rem.gif")); //$NON-NLS-1$
+			JFaceResources
+					.getImageRegistry()
+					.put(CLEAR_FINISHED_JOB_KEY,
+							ImageDescriptor.createFromURL(url));
+		}
+
+		if (registry.get(DISABLED_CLEAR_FINISHED_JOB_KEY) == null) {
+			URL url = FileLocator.toFileURL(Activator.getContext().getBundle()
+					.getEntry("icons/full/dlcl16/progress_rem.gif")); //$NON-NLS-1$
+			JFaceResources
+					.getImageRegistry()
+					.put(DISABLED_CLEAR_FINISHED_JOB_KEY,
+							ImageDescriptor.createFromURL(url));
+		}
 
 		// Mac has different Gamma value
 		int shift = Util.isMac() ? -25 : -10;
 
-		Color lightColor = Display.getCurrent()
-				.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+		Color lightColor = Display.getCurrent().getSystemColor(
+				SWT.COLOR_LIST_BACKGROUND);
 
 		// Determine a dark color by shifting the list color
-		RGB darkRGB = new RGB(Math.max(0, lightColor.getRed() + shift), Math
-				.max(0, lightColor.getGreen() + shift), Math.max(0, lightColor
-				.getBlue()
-				+ shift));
+		RGB darkRGB = new RGB(Math.max(0, lightColor.getRed() + shift),
+				Math.max(0, lightColor.getGreen() + shift), Math.max(0,
+						lightColor.getBlue() + shift));
 		JFaceResources.getColorRegistry().put(DARK_COLOR_KEY, darkRGB);
 	}
 
@@ -196,13 +216,15 @@ public class ProgressInfoItem extends Composite {
 		createChildren();
 		setData(info);
 		setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
-		
-		//FIXME - need to find a way to do this
-//		ILabelDecorator labelDecorator = PlatformUI.getWorkbench().getDecoratorManager()
-//				.getLabelDecorator(ContributingPluginDecorator.ID);
-//		if (labelDecorator != null && info.isJobInfo()) {
-//			setToolTipText(labelDecorator.decorateText(getMainTitle(), ((JobInfo) info).getJob()));
-//		}
+
+		// FIXME - need to find a way to do this
+		// ILabelDecorator labelDecorator =
+		// PlatformUI.getWorkbench().getDecoratorManager()
+		// .getLabelDecorator(ContributingPluginDecorator.ID);
+		// if (labelDecorator != null && info.isJobInfo()) {
+		// setToolTipText(labelDecorator.decorateText(getMainTitle(), ((JobInfo)
+		// info).getJob()));
+		// }
 	}
 
 	/**
@@ -250,7 +272,9 @@ public class ProgressInfoItem extends Composite {
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
+			 * @see
+			 * org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.
+			 * widgets.Event)
 			 */
 			public void handleEvent(Event event) {
 				if (indexListener == null) {
@@ -278,11 +302,7 @@ public class ProgressInfoItem extends Composite {
 		progressLabel.setLayoutData(progressData);
 
 		mouseListener = new MouseAdapter() {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
-			 */
+			@Override
 			public void mouseDown(MouseEvent e) {
 				if (indexListener != null) {
 					indexListener.select();
@@ -386,8 +406,8 @@ public class ProgressInfoItem extends Composite {
 	 */
 	private ResourceManager getResourceManager() {
 		if (resourceManager == null)
-			resourceManager = new LocalResourceManager(JFaceResources
-					.getResources());
+			resourceManager = new LocalResourceManager(
+					JFaceResources.getResources());
 		return resourceManager;
 	}
 
@@ -778,7 +798,9 @@ public class ProgressInfoItem extends Composite {
 				/*
 				 * (non-Javadoc)
 				 * 
-				 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
+				 * @see
+				 * org.eclipse.swt.events.SelectionListener#widgetSelected(org
+				 * .eclipse.swt.events.SelectionEvent)
 				 */
 				public void widgetSelected(SelectionEvent e) {
 					executeTrigger();
@@ -789,7 +811,9 @@ public class ProgressInfoItem extends Composite {
 				/*
 				 * (non-Javadoc)
 				 * 
-				 * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
+				 * @see
+				 * org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.
+				 * swt.widgets.Event)
 				 */
 				public void handleEvent(Event event) {
 
@@ -842,34 +866,11 @@ public class ProgressInfoItem extends Composite {
 				action.run();
 			updateTrigger(action, link);
 		} else if (data instanceof ParameterizedCommand) {
-			//FIXME - Get access to the handler service
-//			IWorkbench workbench = PlatformUI
-//					.getWorkbench();
-//			IHandlerService handlerService = (IHandlerService) workbench
-//					.getService(
-//							IHandlerService.class);
-//			IStatus status = Status.OK_STATUS;
-//			try {
-//				handlerService
-//						.executeCommand((ParameterizedCommand) data, null);
-//			} catch (ExecutionException e) {
-//				status = new Status(IStatus.ERROR, "org.eclipse.e4.ui.part", e
-//						.getMessage(), e);
-//			} catch (NotDefinedException e) {
-//				status = new Status(IStatus.ERROR, "org.eclipse.e4.ui.part", e
-//						.getMessage(), e);
-//			} catch (NotEnabledException e) {
-//				status = new Status(IStatus.WARNING, "org.eclipse.e4.ui.part", e
-//						.getMessage(), e);
-//			} catch (NotHandledException e) {
-//				status = new Status(IStatus.ERROR, "org.eclipse.e4.ui.part", e
-//						.getMessage(), e);
-//			}
-//
-//			if (!status.isOK()) {
-//				StatusManager.getManager().handle(status,
-//						StatusManager.LOG | StatusManager.SHOW);
-//			}
+			if (handlerService != null) {
+				handlerService
+						.executeHandler((ParameterizedCommand) data, null);
+
+			}
 		}
 
 		Object text = link.getData(TEXT_KEY);
@@ -950,9 +951,9 @@ public class ProgressInfoItem extends Composite {
 		setForeground(color);
 		progressLabel.setForeground(color);
 
-		Iterator taskEntryIterator = taskEntries.iterator();
+		Iterator<Link> taskEntryIterator = taskEntries.iterator();
 		while (taskEntryIterator.hasNext()) {
-			((Link) taskEntryIterator.next()).setForeground(color);
+			taskEntryIterator.next().setForeground(color);
 		}
 
 	}
@@ -968,9 +969,9 @@ public class ProgressInfoItem extends Composite {
 		actionBar.setBackground(color);
 		jobImageLabel.setBackground(color);
 
-		Iterator taskEntryIterator = taskEntries.iterator();
+		Iterator<Link> taskEntryIterator = taskEntries.iterator();
 		while (taskEntryIterator.hasNext()) {
-			((Link) taskEntryIterator.next()).setBackground(color);
+			taskEntryIterator.next().setBackground(color);
 		}
 
 	}
@@ -1041,13 +1042,15 @@ public class ProgressInfoItem extends Composite {
 		if (refresh)
 			refresh();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.swt.widgets.Widget#dispose()
 	 */
 	public void dispose() {
 		super.dispose();
-		if(resourceManager != null)
+		if (resourceManager != null)
 			resourceManager.dispose();
 	}
 

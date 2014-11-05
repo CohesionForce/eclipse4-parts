@@ -21,8 +21,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.part.IPageSite;
-import org.eclipse.ui.part.Page;
 
 /**
  * An abstract base class for content outline pages.
@@ -49,8 +47,9 @@ import org.eclipse.ui.part.Page;
  * <code>IContentOutlinePage</code> directly rather than subclassing this class.
  * </p> 
  */
-public abstract class ContentOutlinePage extends Page implements
+public abstract class ContentOutlinePage implements
         IContentOutlinePage, ISelectionChangedListener {
+	
     private ListenerList selectionChangedListeners = new ListenerList();
 
     private TreeViewer treeViewer;
@@ -143,15 +142,6 @@ public abstract class ContentOutlinePage extends Page implements
      */
     protected TreeViewer getTreeViewer() {
         return treeViewer;
-    }
-
-    /*
-     *  (non-Javadoc)
-     * @see org.eclipse.ui.part.IPageBookViewPage#init(org.eclipse.ui.part.IPageSite)
-     */
-    public void init(IPageSite pageSite) {
-        super.init(pageSite);
-        pageSite.setSelectionProvider(this);
     }
 
     /* (non-Javadoc)

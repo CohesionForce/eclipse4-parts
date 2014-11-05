@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.Control;
  *
  * @see PageBookView
  */
-public abstract class Page implements IPageBookViewPage {
+public abstract class Page implements IPage {
     /**
      * The site which contains this page
      */

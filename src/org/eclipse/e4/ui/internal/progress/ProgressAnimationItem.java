@@ -10,17 +10,19 @@
  *******************************************************************************/
 package org.eclipse.e4.ui.internal.progress;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.NotEnabledException;
-import org.eclipse.core.commands.NotHandledException;
+import java.io.IOException;
+import java.net.URL;
+
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.ui.part.Activator;
 import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.e4.ui.progress.IProgressConstants2;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.Util;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -43,19 +45,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.handlers.IHandlerService;
-import org.eclipse.ui.internal.WorkbenchImages;
-import org.eclipse.e4.ui.internal.progress.AnimationItem;
-import org.eclipse.e4.ui.internal.progress.FinishedJobs;
-import org.eclipse.e4.ui.internal.progress.JobInfo;
-import org.eclipse.e4.ui.internal.progress.JobTreeElement;
-import org.eclipse.e4.ui.internal.progress.ProgressAnimationItem;
-import org.eclipse.e4.ui.internal.progress.ProgressMessages;
-import org.eclipse.e4.ui.internal.progress.ProgressRegion;
-import org.eclipse.e4.ui.internal.progress.StatusAdapterHelper;
-import org.eclipse.ui.statushandlers.StatusAdapter;
-import org.eclipse.ui.statushandlers.StatusManager;
 
 /**
  * The ProgressAnimationItem is the animation items that uses the progress bar.
@@ -91,7 +80,7 @@ public class ProgressAnimationItem extends AnimationItem implements
 	 *            flags to use for creation of the progress bar
 	 */
 	ProgressAnimationItem(ProgressRegion region, int flags) {
-		super(region.workbenchWindow);
+		super();
 		this.flags = flags;
 		FinishedJobs.getInstance().addListener(this);
 
@@ -116,14 +105,6 @@ public class ProgressAnimationItem extends AnimationItem implements
 
 					IStatus status = job.getResult();
 					if (status != null && status.getSeverity() == IStatus.ERROR) {
-						StatusAdapter statusAdapter = StatusAdapterHelper
-								.getInstance().getStatusAdapter(ji);
-
-						if (statusAdapter == null) 
-							statusAdapter = new StatusAdapter(status);
-
-						StatusManager.getManager().handle(statusAdapter,
-								StatusManager.SHOW);
 
 						removeTopElement(ji);
 					}
@@ -153,28 +134,26 @@ public class ProgressAnimationItem extends AnimationItem implements
 		prop = job.getProperty(IProgressConstants2.COMMAND_PROPERTY);
 		if (prop instanceof ParameterizedCommand) {
 			ParameterizedCommand command = (ParameterizedCommand) prop;
-			IWorkbenchWindow window = getWindow();
-			IHandlerService service = (IHandlerService) window
-					.getService(IHandlerService.class);
 			Exception exception = null;
-			try {
-				service.executeCommand(command, null);
-				removeTopElement(ji);
-			} catch (ExecutionException e) {
-				exception = e;
-			} catch (NotDefinedException e) {
-				exception = e;
-			} catch (NotEnabledException e) {
-				exception = e;
-			} catch (NotHandledException e) {
-				exception = e;
-			}
+
+			// FIXME - find a way to execute the command
+			// try {
+			// service.executeCommand(command, null);
+			removeTopElement(ji);
+			// } catch (ExecutionException e) {
+			// exception = e;
+			// } catch (NotDefinedException e) {
+			// exception = e;
+			// } catch (NotEnabledException e) {
+			// exception = e;
+			// } catch (NotHandledException e) {
+			// exception = e;
+			// }
 
 			if (exception != null) {
-				Status status = new Status(IStatus.ERROR, "org.eclipse.e4.ui.part",
-						exception.getMessage(), exception);
-				StatusManager.getManager().handle(status,
-						StatusManager.LOG | StatusManager.SHOW);
+				Status status = new Status(IStatus.ERROR,
+						"org.eclipse.e4.ui.part", exception.getMessage(),
+						exception);
 			}
 
 		}
@@ -253,31 +232,45 @@ public class ProgressAnimationItem extends AnimationItem implements
 	private void initButton(Image im, final String tt) {
 		toolButton.setImage(im);
 		toolButton.setToolTipText(tt);
-    	toolbar.setVisible(true);
+		toolbar.setVisible(true);
 		toolbar.getParent().layout(); // must layout
-		
-    	toolbar.getAccessible().addAccessibleListener(new AccessibleAdapter() {
-        	public void getName(AccessibleEvent e) {
-        		e.result = tt;
-        	}
-        });
+
+		toolbar.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			public void getName(AccessibleEvent e) {
+				e.result = tt;
+			}
+		});
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.e4.ui.internal.progress.AnimationItem#createAnimationItem(org.eclipse.swt.widgets.Composite)
+	 * @see
+	 * org.eclipse.e4.ui.internal.progress.AnimationItem#createAnimationItem
+	 * (org.eclipse.swt.widgets.Composite)
 	 */
 	protected Control createAnimationItem(Composite parent) {
 
 		if (okImage == null) {
 			Display display = parent.getDisplay();
-			noneImage = WorkbenchImages.getWorkbenchImageDescriptor(
-					"progress/progress_none.gif").createImage(display); //$NON-NLS-1$
-			okImage = WorkbenchImages.getWorkbenchImageDescriptor(
-					"progress/progress_ok.gif").createImage(display); //$NON-NLS-1$
-			errorImage = WorkbenchImages.getWorkbenchImageDescriptor(
-					"progress/progress_error.gif").createImage(display); //$NON-NLS-1$
+			try {
+				URL url = FileLocator.toFileURL(Activator.getContext()
+						.getBundle()
+						.getEntry("icons/full/progress/progress_none.gif")); //$NON-NLS-1$
+				noneImage = ImageDescriptor.createFromURL(url).createImage(
+						display);
+				url = FileLocator.toFileURL(Activator.getContext().getBundle()
+						.getEntry("icons/full/progress/progress_ok.gif")); //$NON-NLS-1$
+				okImage = ImageDescriptor.createFromURL(url).createImage(
+						display);
+				url = FileLocator.toFileURL(Activator.getContext().getBundle()
+						.getEntry("icons/full/progress/progress_error.gif")); //$NON-NLS-1$
+				errorImage = ImageDescriptor.createFromURL(url).createImage(
+						display);
+
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 
 		top = new Composite(parent, SWT.NULL);

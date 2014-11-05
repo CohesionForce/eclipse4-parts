@@ -81,6 +81,10 @@ public abstract class WorkbenchJob extends UIJob {
      * @see org.eclipse.core.internal.jobs.InternalJob#shouldSchedule()
      */
     public boolean shouldSchedule() {
+    	if(this.getDisplay().isDisposed())
+    	{
+    		return false;
+    	}
         return super.shouldSchedule();
     }
 
@@ -88,6 +92,10 @@ public abstract class WorkbenchJob extends UIJob {
      * @see org.eclipse.core.runtime.jobs.Job#shouldRun()
      */
     public boolean shouldRun() {
+    	if(this.getDisplay().isDisposed())
+    	{
+    		return false;
+    	}
         return super.shouldRun();
     }
 

@@ -83,7 +83,6 @@ public interface IProgressConstants {
 	 * </p>
 	 * 
 	 * @see org.eclipse.jface.action.IAction
-	 * @see org.eclipse.ui.actions.ActionFactory.IWorkbenchAction
 	 **/
     public static final QualifiedName ACTION_PROPERTY = new QualifiedName(
             PROPERTY_PREFIX, "action"); //$NON-NLS-1$

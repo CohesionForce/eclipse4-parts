@@ -18,7 +18,7 @@ import org.eclipse.e4.ui.internal.progress.ProgressInfoItem;
 /**
  * The JobTreeElement is the abstract superclass of items displayed in the tree.
  */
-public abstract class JobTreeElement implements Comparable {
+public abstract class JobTreeElement implements Comparable<JobTreeElement> {
 
 	/**
 	 * Return the parent of this object.
@@ -91,11 +91,9 @@ public abstract class JobTreeElement implements Comparable {
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Object arg0) {
-		if (arg0 instanceof JobTreeElement)
+	public int compareTo(JobTreeElement arg0) {
 			return getDisplayString().compareTo(
-					((JobTreeElement) arg0).getDisplayString());
-		return 0;
+					arg0.getDisplayString());
 	}
 
 	/**

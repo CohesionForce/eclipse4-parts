@@ -19,16 +19,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.internal.WorkbenchWindow;
-import org.eclipse.e4.ui.internal.progress.AnimationItem;
-import org.eclipse.e4.ui.internal.progress.AnimationManager;
-import org.eclipse.e4.ui.internal.progress.ProgressManagerUtil;
 
 /**
  * The AnimationItem is the class that manages the animation for the progress.
  */
 public abstract class AnimationItem {
-    WorkbenchWindow window;
 
     interface IAnimationContainer {
         /**
@@ -65,8 +60,7 @@ public abstract class AnimationItem {
      * @param workbenchWindow
      *            the window being created
      */
-    public AnimationItem(WorkbenchWindow workbenchWindow) {
-        this.window = workbenchWindow;
+    public AnimationItem() {
     }
 
     /**
@@ -85,7 +79,6 @@ public abstract class AnimationItem {
              * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
              */
             public void mouseDoubleClick(MouseEvent arg0) {
-                ProgressManagerUtil.openProgressView(AnimationItem.this.window);
             }
 
             /*
@@ -173,10 +166,4 @@ public abstract class AnimationItem {
         this.animationContainer = container;
     }
 
-	/**
-	 * @return Returns the window.
-	 */
-	public WorkbenchWindow getWindow() {
-		return window;
-	}
 }

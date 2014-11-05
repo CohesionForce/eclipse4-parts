@@ -47,7 +47,6 @@ import org.eclipse.e4.ui.progress.IProgressService;
  * to the jobs framework if they do not wish to reference it.
  * </p>
  * 
- * @see org.eclipse.ui.IWorkbench#getProgressService()
  * @see IJobManager#setProgressProvider(org.eclipse.core.runtime.jobs.ProgressProvider)
  * @see org.eclipse.ui.services.IServiceLocator#getService(Class)
  * 

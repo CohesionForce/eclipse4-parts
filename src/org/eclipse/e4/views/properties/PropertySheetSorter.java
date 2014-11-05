@@ -14,8 +14,6 @@ import java.text.Collator; // can't use ICU, in public API
 import java.util.Arrays;
 import java.util.Comparator;
 
-import org.eclipse.ui.views.properties.IPropertySheetEntry;
-
 /**
  * Class used by {@link org.eclipse.ui.views.properties.PropertySheetPage} to
  * sort properties.
@@ -23,10 +21,10 @@ import org.eclipse.ui.views.properties.IPropertySheetEntry;
  * The default implementation sorts alphabetically. Subclasses may overwrite to
  * implement custom sorting.
  * </p>
- *
+ * 
  * @since 3.1
  */
-public class PropertySheetSorter  {
+public class PropertySheetSorter {
 
 	/**
 	 * The collator used to sort strings.
@@ -54,8 +52,8 @@ public class PropertySheetSorter  {
 	 * Returns a negative, zero, or positive number depending on whether the
 	 * first element is less than, equal to, or greater than the second element.
 	 * <p>
-	 * The default implementation of this method uses the collator to
-	 * compare the display names. Subclasses may override.
+	 * The default implementation of this method uses the collator to compare
+	 * the display names. Subclasses may override.
 	 * </p>
 	 * 
 	 * @param entryA
@@ -76,8 +74,8 @@ public class PropertySheetSorter  {
 	 * Returns a negative, zero, or positive number depending on whether the
 	 * first element is less than, equal to, or greater than the second element.
 	 * <p>
-	 * The default implementation of this method uses the collator to
-	 * compare the strings. Subclasses may override.
+	 * The default implementation of this method uses the collator to compare
+	 * the strings. Subclasses may override.
 	 * </p>
 	 * 
 	 * @param categoryA
@@ -118,10 +116,9 @@ public class PropertySheetSorter  {
 	 *            the elements to sort
 	 */
 	public void sort(IPropertySheetEntry[] entries) {
-		Arrays.sort(entries, new Comparator() {
-			public int compare(Object a, Object b) {
-				return PropertySheetSorter.this.compare(
-						(IPropertySheetEntry) a, (IPropertySheetEntry) b);
+		Arrays.sort(entries, new Comparator<IPropertySheetEntry>() {
+			public int compare(IPropertySheetEntry a, IPropertySheetEntry b) {
+				return PropertySheetSorter.this.compare(a, b);
 			}
 		});
 	}
@@ -133,8 +130,8 @@ public class PropertySheetSorter  {
 	 *            the categories to sort
 	 */
 	void sort(PropertySheetCategory[] categories) {
-		Arrays.sort(categories, new Comparator() {
-			public int compare(Object a, Object b) {
+		Arrays.sort(categories, new Comparator<PropertySheetCategory>() {
+			public int compare(PropertySheetCategory a, PropertySheetCategory b) {
 				return PropertySheetSorter.this.compareCategories(
 						((PropertySheetCategory) a).getCategoryName(),
 						((PropertySheetCategory) b).getCategoryName());

@@ -14,7 +14,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.e4.ui.internal.progress.ProgressMessages;
 
 public class ProgressMessages extends NLS {
-	private static final String BUNDLE_NAME = "org.eclipse.ui.internal.progress.messages";//$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.e4.ui.internal.progress.messages";//$NON-NLS-1$
 
 	public static String PendingUpdateAdapter_PendingLabel;
 	public static String JobInfo_DoneMessage;

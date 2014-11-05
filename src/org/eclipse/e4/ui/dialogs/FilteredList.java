@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,9 +38,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.internal.misc.StringMatcher;
-import org.eclipse.ui.internal.util.Util;
-import org.eclipse.ui.progress.WorkbenchJob;
 
 /**
  * A composite widget which holds a list of elements for user selection. The
@@ -80,16 +78,15 @@ public class FilteredList extends Composite {
 	}
 
 	private class DefaultFilterMatcher implements FilterMatcher {
-		private StringMatcher fMatcher;
+		private Pattern p;
 
 		public void setFilter(String pattern, boolean ignoreCase,
 				boolean ignoreWildCards) {
-			fMatcher = new StringMatcher(pattern + '*', ignoreCase,
-					ignoreWildCards);
+		    Pattern p = Pattern.compile(pattern + '*', Pattern.CASE_INSENSITIVE);
 		}
 
 		public boolean match(Object element) {
-			return fMatcher.match(fLabelProvider.getText(element));
+			return p.matcher(fLabelProvider.getText(element)).matches();
 		}
 	}
 
@@ -149,7 +146,7 @@ public class FilteredList extends Composite {
 		 */
 		public Label(String newString, Image image) {
 			if (newString == null) {
-				this.string = Util.ZERO_LENGTH_STRING;
+				this.string = "";
 			} else {
 				this.string = newString;
 			}

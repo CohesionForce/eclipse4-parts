@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.e4.ui.internal.progress;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -19,17 +22,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
 import org.eclipse.core.runtime.jobs.Job;
-
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-
-import org.eclipse.ui.internal.TrimUtil;
-import org.eclipse.ui.internal.WorkbenchMessages;
-import org.eclipse.ui.internal.WorkbenchWindow;
-import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.e4.ui.internal.progress.AnimationItem;
 import org.eclipse.e4.ui.internal.progress.AnimationManager;
 import org.eclipse.e4.ui.internal.progress.JobInfo;
@@ -38,23 +34,22 @@ import org.eclipse.e4.ui.internal.progress.ProgressCanvasViewer;
 import org.eclipse.e4.ui.internal.progress.ProgressManagerUtil;
 import org.eclipse.e4.ui.internal.progress.ProgressViewerContentProvider;
 import org.eclipse.e4.ui.internal.progress.ProgressViewerLabelProvider;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 /**
  * The ProgressRegion is class for the region of the workbench where the
  * progress line and the animation item are shown.
  */
-public class ProgressRegion implements IWindowTrim {
+public class ProgressRegion {
     ProgressCanvasViewer viewer;
 
     ProgressAnimationItem animationItem;
 
-    Composite region;
-
-    WorkbenchWindow workbenchWindow;
+    @Inject
+    EPartService partService;
     
-	private int fWidthHint = SWT.DEFAULT;
-	
-	private int fHeightHint = SWT.DEFAULT;
+    Composite region;
 
 	/**
 	 * the side the receiver is placed on
@@ -80,8 +75,8 @@ public class ProgressRegion implements IWindowTrim {
      *            The WorkbenchWindow this is in.
      * @return Control
      */
-    public Control createContents(Composite parent, WorkbenchWindow window) {
-        workbenchWindow = window;
+    @PostConstruct
+    public Control createContents(Composite parent) {
 
         // Test whether or not 'advanced' graphics are available
         // If not then we'll 'force' the ProgressBar to always be
@@ -93,18 +88,13 @@ public class ProgressRegion implements IWindowTrim {
         gc.dispose();
         
         region = new Composite(parent, SWT.NONE) {
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see org.eclipse.swt.widgets.Composite#computeSize(int, int,
-			 *      boolean)
-			 */
-			public Point computeSize(int wHint, int hHint, boolean changed) {
+        	@Override
+        	public Point computeSize(int wHint, int hHint, boolean changed) {
 				Point size = super.computeSize(wHint, hHint, changed);
 				if (isHorizontal(side))
-					size.y = TrimUtil.TRIM_DEFAULT_HEIGHT;
+					size.y = 20;
 				else {
-					size.x = TrimUtil.TRIM_DEFAULT_HEIGHT;
+					size.x = 20;
 				}
 				return size;
 			}
@@ -137,10 +127,8 @@ public class ProgressRegion implements IWindowTrim {
         animationItem.createControl(region);
 
         animationItem.setAnimationContainer(new AnimationItem.IAnimationContainer() {
-            /* (non-Javadoc)
-             * @see org.eclipse.e4.ui.internal.progress.AnimationItem.IAnimationContainer#animationDone()
-             */
-            public void animationDone() {
+        	@Override
+        	public void animationDone() {
                 //Add an extra refresh to the viewer in case
                 //of stale input if the controls are not disposed
                 if (viewer.getControl().isDisposed()) {
@@ -149,12 +137,9 @@ public class ProgressRegion implements IWindowTrim {
                 viewer.refresh();
             }
 
-            /* (non-Javadoc)
-             * @see org.eclipse.e4.ui.internal.progress.AnimationItem.IAnimationContainer#animationStart()
-             */
+        	@Override
             public void animationStart() {
                 // Nothing by default here.
-
             }
         });
         if (isHorizontal(side)) {
@@ -168,12 +153,8 @@ public class ProgressRegion implements IWindowTrim {
         animationItem.getControl().setLayoutData(gd);
 
         viewerControl.addMouseListener(new MouseAdapter() {
-            /*
-             * (non-Javadoc)
-             * 
-             * @see org.eclipse.swt.events.MouseAdapter#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
-             */
-            public void mouseDoubleClick(MouseEvent e) {
+        	@Override
+        	public void mouseDoubleClick(MouseEvent e) {
                 processDoubleClick();
             }
         });
@@ -222,19 +203,24 @@ public class ProgressRegion implements IWindowTrim {
      * Process the double click event.
      */
     public void processDoubleClick() {
-        ProgressManagerUtil.openProgressView(workbenchWindow);
+    	MPart part = partService.findPart("org.eclipse.e4.ui.progress");
+    	if(part == null)
+    	{
+    		part = (MPart) partService.createSharedPart("org.eclipse.e4.ui.progress");
+    	}
+    	if(part != null)
+    	{
+    		partService.activate(part);
+    	}
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.internal.IWindowTrim#dock(int)
-	 */
+    //TODO - find out what to do with this
 	public void dock(int dropSide) {
 		int oldSide = side;
 		side = dropSide;
 		if (oldSide == dropSide || (isVertical(oldSide) && isVertical(dropSide)) || (isHorizontal(oldSide) && isHorizontal(dropSide)))
 			return;
 		recreate();
-		
 	}
 
 	/**
@@ -271,82 +257,9 @@ public class ProgressRegion implements IWindowTrim {
 			boolean animating = animationItem.animationRunning();
 	        AnimationManager.getInstance().removeItem(animationItem);
 			region.dispose();
-			createContents(parent, workbenchWindow);
+			createContents(parent);
 			if (animating)
 				animationItem.animationStart();
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.internal.IWindowTrim#getId()
-	 */
-	public String getId() {
-		return "org.eclipse.e4.ui.internal.progress.ProgressRegion"; //$NON-NLS-1$
-	}
-
-	public String getDisplayName() {
-		return WorkbenchMessages.TrimCommon_Progress_TrimName;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.internal.IWindowTrim#getValidSides()
-	 */
-	public int getValidSides() {
-		return SWT.BOTTOM | SWT.TOP | SWT.LEFT | SWT.RIGHT ;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.internal.IWindowTrim#isCloseable()
-	 */
-	public boolean isCloseable() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.internal.IWindowTrim#handleClose()
-	 */
-	public void handleClose() {
-		// nothing to do...
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWindowTrim#getWidthHint()
-	 */
-	public int getWidthHint() {
-		return fWidthHint;
-	}
-	
-	/**
-	 * Update the width hint for this control.
-	 * @param w pixels, or SWT.DEFAULT
-	 */
-	public void setWidthHint(int w) {
-		fWidthHint = w;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IWindowTrim#getHeightHint()
-	 */
-	public int getHeightHint() {
-		return fHeightHint;
-	}
-	
-	/**
-	 * Update the height hint for this control.
-	 * @param h pixels, or SWT.DEFAULT
-	 */
-	public void setHeightHint(int h) {
-		fHeightHint = h;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWindowTrim#isResizeable()
-	 */
-	public boolean isResizeable() {
-		return false;
 	}
 }
