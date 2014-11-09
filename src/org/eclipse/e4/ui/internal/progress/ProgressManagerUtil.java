@@ -12,6 +12,8 @@ package org.eclipse.e4.ui.internal.progress;
 
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
@@ -43,16 +45,15 @@ public class ProgressManagerUtil {
 	private static String ellipsis = ProgressMessages.ProgressFloatingWindow_EllipsisValue;
 
 	static final QualifiedName INFRASTRUCTURE_PROPERTY = new QualifiedName(
-			"org.eclipse.ui", "INFRASTRUCTURE_PROPERTY");//$NON-NLS-1$
+			"org.eclipse.e4.ui", "INFRASTRUCTURE_PROPERTY");//$NON-NLS-1$
 
-	// /**
-	// * Sets the label provider for the viewer.
-	// *
-	// * @param viewer
-	// */
-	// static void initLabelProvider(ProgressTreeViewer viewer) {
-	// viewer.setLabelProvider(new ProgressLabelProvider());
-	// }
+	static MApplication application = null;
+	
+	static void setApplication(MApplication application)
+	{
+		ProgressManagerUtil.application = application;
+	}
+	
 	/**
 	 * Return a viewer comparator for looking at the jobs.
 	 * 
@@ -60,6 +61,7 @@ public class ProgressManagerUtil {
 	 */
 	static ViewerComparator getProgressViewerComparator() {
 		return new ViewerComparator() {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public int compare(Viewer testViewer, Object e1, Object e2) {
 				return ((Comparable) e1).compareTo(e2);
@@ -77,7 +79,6 @@ public class ProgressManagerUtil {
 	 * @param control
 	 * @return String
 	 */
-
 	static String shortenText(String textValue, Control control) {
 		if (textValue == null) {
 			return null;
@@ -282,85 +283,25 @@ public class ProgressManagerUtil {
 	 * @return Shell
 	 */
 	public static Shell getNonModalShell() {
-		//FIXME - Find a way to get the MApplication
-//		MApplication application = (MApplication) PlatformUI.getWorkbench().getService(
-//				MApplication.class);
-//		if (application == null) {
-//			// better safe than sorry
-//			return null;
-//		}
-//		MWindow window = application.getSelectedElement();
-//		if (window != null) {
-//			Object widget = window.getWidget();
-//			if (widget instanceof Shell) {
-//				return (Shell) widget;
-//			}
-//		}
-//		for (MWindow child : application.getChildren()) {
-//			Object widget = child.getWidget();
-//			if (widget instanceof Shell) {
-//				return (Shell) widget;
-//			}
-//		}
+		if (application == null) {
+			// better safe than sorry
+			return null;
+		}
+		MWindow window = application.getSelectedElement();
+		if (window != null) {
+			Object widget = window.getWidget();
+			if (widget instanceof Shell) {
+				return (Shell) widget;
+			}
+		}
+		for (MWindow child : application.getChildren()) {
+			Object widget = child.getWidget();
+			if (widget instanceof Shell) {
+				return (Shell) widget;
+			}
+		}
 		return null;
 	}
-
-	/**
-	 * Animate the closing of a window given the start position down to the
-	 * progress region.
-	 * 
-	 * @param startPosition
-	 *            Rectangle. The position to start drawing from.
-	 */
-//	public static void animateDown(Rectangle startPosition) {
-//		IWorkbenchWindow currentWindow = PlatformUI.getWorkbench()
-//				.getActiveWorkbenchWindow();
-//		if (currentWindow == null) {
-//			return;
-//		}
-//		WorkbenchWindow internalWindow = (WorkbenchWindow) currentWindow;
-//
-//		ProgressRegion progressRegion = internalWindow.getProgressRegion();
-//		if (progressRegion == null) {
-//			return;
-//		}
-//		Rectangle endPosition = progressRegion.getControl().getBounds();
-//
-//		Point windowLocation = internalWindow.getShell().getLocation();
-//		endPosition.x += windowLocation.x;
-//		endPosition.y += windowLocation.y;
-//
-//		// animate the progress dialog's removal
-//		AnimationEngine.createTweakedAnimation(internalWindow.getShell(), 400, startPosition, endPosition);
-//	}
-
-	/**
-	 * Animate the opening of a window given the start position down to the
-	 * progress region.
-	 * 
-	 * @param endPosition
-	 *            Rectangle. The position to end drawing at.
-	 */
-//	public static void animateUp(Rectangle endPosition) {
-//		IWorkbenchWindow currentWindow = PlatformUI.getWorkbench()
-//				.getActiveWorkbenchWindow();
-//		if (currentWindow == null) {
-//			return;
-//		}
-//		WorkbenchWindow internalWindow = (WorkbenchWindow) currentWindow;
-//		Point windowLocation = internalWindow.getShell().getLocation();
-//
-//		ProgressRegion progressRegion = internalWindow.getProgressRegion();
-//		if (progressRegion == null) {
-//			return;
-//		}
-//		Rectangle startPosition = progressRegion.getControl().getBounds();
-//		startPosition.x += windowLocation.x;
-//		startPosition.y += windowLocation.y;
-//
-//		// animate the progress dialog's arrival
-//		AnimationEngine.createTweakedAnimation(internalWindow.getShell(), 400, startPosition, endPosition);
-//	}
 
 	/**
 	 * Get the shell provider to use in the progress support dialogs. This

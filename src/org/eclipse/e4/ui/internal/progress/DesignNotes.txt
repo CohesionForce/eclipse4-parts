@@ -13,8 +13,3 @@ The entire Jobs View depends on org.eclipse.core.runtime.jobs.Job so it may not 
 feasible to maintain separate lists of Jobs.
 
 LabelDecorator? 
-
-Actions - 
-Workbench Images - Need to pull the image resources used in the Progress View into the bundle for the view.
-
-Need to correct the capability that runs a command after the job completes.

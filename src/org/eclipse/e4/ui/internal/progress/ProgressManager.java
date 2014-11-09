@@ -43,7 +43,10 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.jobs.ProgressProvider;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.ui.part.Activator;
+import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.e4.ui.progress.IProgressService;
 import org.eclipse.e4.ui.progress.WorkbenchJob;
 import org.eclipse.jface.operation.IRunnableContext;
@@ -345,6 +348,7 @@ public class ProgressManager extends ProgressProvider implements
 	private void setUpImages() {
 		URL iconsRoot;
 		try {
+			
 			URL url = Activator.getContext().getBundle().getEntry("icons/full/progress");
 			iconsRoot = FileLocator.toFileURL(url);
 			setUpImage(iconsRoot, SLEEPING_JOB, SLEEPING_JOB_KEY);
@@ -1174,7 +1178,12 @@ public class ProgressManager extends ProgressProvider implements
 	 * @return <code>true</code> if the dialog should not be shown.
 	 */
 	private boolean shouldRunInBackground() {
-		return true;
+		IEclipsePreferences preferences = DefaultScope.INSTANCE
+				.getNode(IProgressConstants.PROPERTY_PREFIX);
+		boolean showDialog = preferences.getBoolean(
+				IProgressConstants.RUN_IN_BACKGROUND, true);
+
+		return !showDialog;
 	}
 
 	/**

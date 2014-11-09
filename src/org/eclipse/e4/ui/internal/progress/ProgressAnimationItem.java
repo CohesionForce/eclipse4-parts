@@ -13,11 +13,14 @@ package org.eclipse.e4.ui.internal.progress;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.part.Activator;
 import org.eclipse.e4.ui.progress.IProgressConstants;
 import org.eclipse.e4.ui.progress.IProgressConstants2;
@@ -49,8 +52,13 @@ import org.eclipse.swt.widgets.ToolItem;
 /**
  * The ProgressAnimationItem is the animation items that uses the progress bar.
  */
+@SuppressWarnings("restriction")
 public class ProgressAnimationItem extends AnimationItem implements
 		FinishedJobs.KeptJobsListener {
+
+	@Optional
+	@Inject
+	EHandlerService handlerService;
 
 	ProgressBar bar;
 
@@ -119,42 +127,27 @@ public class ProgressAnimationItem extends AnimationItem implements
 	}
 
 	/**
-	 * @param ji
+	 * @param jobInfo
 	 * @param job
 	 */
-	private void execute(JobInfo ji, Job job) {
+	private void execute(JobInfo jobInfo, Job job) {
 
 		Object prop = job.getProperty(IProgressConstants.ACTION_PROPERTY);
 		if (prop instanceof IAction && ((IAction) prop).isEnabled()) {
 			IAction action = (IAction) prop;
 			action.run();
-			removeTopElement(ji);
+			removeTopElement(jobInfo);
 		}
 
 		prop = job.getProperty(IProgressConstants2.COMMAND_PROPERTY);
 		if (prop instanceof ParameterizedCommand) {
 			ParameterizedCommand command = (ParameterizedCommand) prop;
-			Exception exception = null;
 
-			// FIXME - find a way to execute the command
-			// try {
-			// service.executeCommand(command, null);
-			removeTopElement(ji);
-			// } catch (ExecutionException e) {
-			// exception = e;
-			// } catch (NotDefinedException e) {
-			// exception = e;
-			// } catch (NotEnabledException e) {
-			// exception = e;
-			// } catch (NotHandledException e) {
-			// exception = e;
-			// }
-
-			if (exception != null) {
-				Status status = new Status(IStatus.ERROR,
-						"org.eclipse.e4.ui.part", exception.getMessage(),
-						exception);
+			if (handlerService != null) {
+				handlerService.executeHandler(command);
 			}
+			// service.executeCommand(command, null);
+			removeTopElement(jobInfo);
 
 		}
 	}

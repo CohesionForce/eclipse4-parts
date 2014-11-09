@@ -141,7 +141,7 @@ public class ListSelectionDialog extends SelectionDialog {
      * viewer.
      */
     private void checkInitialSelections() {
-        Iterator itemsToCheck = getInitialElementSelections().iterator();
+        Iterator<?> itemsToCheck = getInitialElementSelections().iterator();
 
         while (itemsToCheck.hasNext()) {
 			listViewer.setChecked(itemsToCheck.next(), true);
@@ -218,7 +218,7 @@ public class ListSelectionDialog extends SelectionDialog {
 
         // Build a list of selected children.
         if (children != null) {
-            ArrayList list = new ArrayList();
+            ArrayList<Object> list = new ArrayList<Object>();
             for (int i = 0; i < children.length; ++i) {
                 Object element = children[i];
                 if (listViewer.getChecked(element)) {

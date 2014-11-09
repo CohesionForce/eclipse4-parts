@@ -409,6 +409,7 @@ public class DetailedProgressViewer extends AbstractProgressViewer {
 
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void setSelectionToWidget(List l, boolean reveal) {
 

@@ -38,7 +38,7 @@ public abstract class SelectionDialog extends TrayDialog {
 	private Object[] result;
 
 	// a collection of the initially-selected elements
-	private List initialSelections = new ArrayList();
+	private List<Object> initialSelections = new ArrayList<Object>();
 
 	// title of dialog
 	private String title;
@@ -108,24 +108,11 @@ public abstract class SelectionDialog extends TrayDialog {
 	}
 
 	/**
-	 * Returns the initial selection in this selection dialog.
-	 * 
-	 * @deprecated use getInitialElementSelections() instead
-	 * @return the list of initial selected elements or null
-	 */
-	protected List getInitialSelections() {
-		if (initialSelections.isEmpty()) {
-			return null;
-		}
-		return getInitialElementSelections();
-	}
-
-	/**
 	 * Returns the list of initial element selections.
 	 * 
 	 * @return List
 	 */
-	protected List getInitialElementSelections() {
+	protected List<Object> getInitialElementSelections() {
 		return initialSelections;
 	}
 
@@ -167,7 +154,7 @@ public abstract class SelectionDialog extends TrayDialog {
 	 *            the array of elements to select
 	 */
 	public void setInitialSelections(Object[] selectedElements) {
-		initialSelections = new ArrayList(selectedElements.length);
+		initialSelections = new ArrayList<Object>(selectedElements.length);
 		for (int i = 0; i < selectedElements.length; i++) {
 			initialSelections.add(selectedElements[i]);
 		}
@@ -180,7 +167,7 @@ public abstract class SelectionDialog extends TrayDialog {
 	 * @param selectedElements
 	 *            the List of elements to select
 	 */
-	public void setInitialElementSelections(List selectedElements) {
+	public void setInitialElementSelections(List<Object> selectedElements) {
 		initialSelections = selectedElements;
 	}
 
@@ -202,7 +189,7 @@ public abstract class SelectionDialog extends TrayDialog {
 	 *            list of selected elements, or <code>null</code> if Cancel
 	 *            was pressed
 	 */
-	protected void setResult(List newResult) {
+	protected void setResult(List<Object> newResult) {
 		if (newResult == null) {
 			result = null;
 		} else {

@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.part.Activator;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
@@ -52,8 +53,10 @@ public class ProgressView {
 	ESelectionService selectionService;
 	
 	@PostConstruct
-	public void createPartControl(Composite parent, IEclipseContext context) {
+	public void createPartControl(Composite parent, IEclipseContext context, MApplication application) {
 
+		ProgressManagerUtil.setApplication(application);
+		
 		viewer = new DetailedProgressViewer(parent, SWT.MULTI | SWT.H_SCROLL);
 		ContextInjectionFactory.inject(viewer, context);
 

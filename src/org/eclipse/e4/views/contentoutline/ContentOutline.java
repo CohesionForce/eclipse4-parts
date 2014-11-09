@@ -19,7 +19,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.ui.basic.MInputPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.part.IPage;
 import org.eclipse.e4.ui.part.MessagePage;
@@ -215,13 +214,8 @@ public class ContentOutline extends PageBookView {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on PageBookView. We only want to track
-	 * editors.
-	 */
 	protected boolean isImportant(MPart part) {
-		// We only care about editors
-		return (part instanceof MInputPart);
+		return true;
 	}
 
 	/*

@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.TableItem;
  * 
  * @since 2.0
  */
+@SuppressWarnings("rawtypes")
 public class FilteredList extends Composite {
 	/**
 	 * The FilterMatcher is the interface used to check filtering criterea.
@@ -82,11 +83,14 @@ public class FilteredList extends Composite {
 
 		public void setFilter(String pattern, boolean ignoreCase,
 				boolean ignoreWildCards) {
-		    Pattern p = Pattern.compile(pattern + '*', Pattern.CASE_INSENSITIVE);
+			p = Pattern.compile(pattern + '*', Pattern.CASE_INSENSITIVE);
 		}
 
 		public boolean match(Object element) {
-			return p.matcher(fLabelProvider.getText(element)).matches();
+			if (p != null) {
+				return p.matcher(fLabelProvider.getText(element)).matches();
+			}
+			return false;
 		}
 	}
 
@@ -185,6 +189,7 @@ public class FilteredList extends Composite {
 			labelIgnoreCase = ignoreCase;
 		}
 
+		@SuppressWarnings("unchecked")
 		public int compare(Object left, Object right) {
 			Label leftLabel = (Label) left;
 			Label rightLabel = (Label) right;
@@ -261,6 +266,7 @@ public class FilteredList extends Composite {
 	 * @param elements
 	 *            the elements to be shown in the list.
 	 */
+	@SuppressWarnings("unchecked")
 	public void setElements(Object[] elements) {
 		if (elements == null) {
 			fElements = new Object[0];
@@ -573,6 +579,7 @@ public class FilteredList extends Composite {
 		 * org.eclipse.ui.progress.UIJob#runInUIThread(org.eclipse.core.runtime
 		 * .IProgressMonitor)
 		 */
+		@SuppressWarnings("unused")
 		public IStatus runInUIThread(IProgressMonitor monitor) {
 			if (fTable.isDisposed()) {
 				return Status.CANCEL_STATUS;
@@ -712,7 +719,7 @@ public class FilteredList extends Composite {
 				});
 				return Status.OK_STATUS;
 			}
-			
+
 			// How many we are going to do this time.
 			int iterations = Math.min(10, fCount - currentIndex);
 			for (int i = 0; i < iterations; i++) {
@@ -751,24 +758,29 @@ public class FilteredList extends Composite {
 								if (fTable.getSelectionIndices().length == 0) {
 									defaultSelect();
 								} else {
-									// There is a selection, but it likely hasn't
+									// There is a selection, but it likely
+									// hasn't
 									// changed since the
-									// job started. Force a selection notification,
+									// job started. Force a selection
+									// notification,
 									// since the
-									// items represented by the selection have changed.
+									// items represented by the selection have
+									// changed.
 									// See
 									// https://bugs.eclipse.org/bugs/show_bug.cgi?id=119456
-									fTable.notifyListeners(SWT.Selection, new Event());
+									fTable.notifyListeners(SWT.Selection,
+											new Event());
 								}
-							}});
+							}
+						});
 					}
 				} else {
 					Display.getDefault().syncExec(new Runnable() {
 
 						@Override
 						public void run() {
-					// Set the selection as indicated.
-					selectAndNotify(indicesToSelect);
+							// Set the selection as indicated.
+							selectAndNotify(indicesToSelect);
 						}
 					});
 				}

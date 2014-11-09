@@ -43,7 +43,7 @@ public class ProgressCanvasViewer extends AbstractProgressViewer {
 
     Object[] displayedItems = new Object[0];
 
-    private final static List EMPTY_LIST = new ArrayList();
+    private final static List<Object> EMPTY_LIST = new ArrayList<Object>();
 
     /**
      * Font metrics to use for determining pixel sizes.
@@ -111,7 +111,7 @@ public class ProgressCanvasViewer extends AbstractProgressViewer {
     }
 
     @Override
-    protected List getSelectionFromWidget() {
+    protected List<Object> getSelectionFromWidget() {
         //No selection on a Canvas
         return EMPTY_LIST;
     }
@@ -127,7 +127,8 @@ public class ProgressCanvasViewer extends AbstractProgressViewer {
         //Nothing to do here as we do not scroll
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     protected void setSelectionToWidget(List l, boolean reveal) {
         //Do nothing as there is no selection
     }

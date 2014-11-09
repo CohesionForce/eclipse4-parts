@@ -72,6 +72,9 @@ public class ProgressMessages extends NLS {
 	public static String JobsViewPreferenceDialog_Title;
 	public static String JobErrorDialog_DoNotShowAgainMessage;
 
+	public static String WorkbenchPreference_RunInBackgroundButton;
+	public static String WorkbenchPreference_RunInBackgroundToolTip;
+
 	static {
 		// load message values from bundle file
 		NLS.initializeMessages(BUNDLE_NAME, ProgressMessages.class);

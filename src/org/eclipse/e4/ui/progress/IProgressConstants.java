@@ -28,7 +28,7 @@ public interface IProgressConstants {
      * Common prefix for properties defined in this interface.
      */
     static final String PROPERTY_PREFIX = "org.eclipse.e4.ui.part"
-            + ".workbench.progress"; //$NON-NLS-1$
+            + ".progress"; //$NON-NLS-1$
 
     /**
      * This property provides a hint to the progress UI to keep Jobs 
@@ -131,4 +131,7 @@ public interface IProgressConstants {
      */
     public static final QualifiedName NO_IMMEDIATE_ERROR_PROMPT_PROPERTY = new QualifiedName(
             PROPERTY_PREFIX, "delayErrorPrompt"); //$NON-NLS-1$
+
+    public static String RUN_IN_BACKGROUND = "RUN_IN_BACKGROUND"; //$NON-NLS-1$
+
 }

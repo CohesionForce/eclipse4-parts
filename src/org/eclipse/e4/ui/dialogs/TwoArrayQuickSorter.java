@@ -20,9 +20,10 @@ import org.eclipse.core.runtime.Assert;
  * 
  * @since 2.0
  */
+@SuppressWarnings("rawtypes")
 /* package */class TwoArrayQuickSorter {
 
-    private Comparator fComparator;
+	private Comparator fComparator;
 
     /**
      * Default comparator.
@@ -76,7 +77,8 @@ import org.eclipse.core.runtime.Assert;
         internalSort(keys, values, 0, keys.length - 1);
     }
 
-    private void internalSort(Object[] keys, Object[] values, int left,
+    @SuppressWarnings("unchecked")
+	private void internalSort(Object[] keys, Object[] values, int left,
             int right) {
         int original_left = left;
         int original_right = right;

@@ -72,6 +72,7 @@ import com.ibm.icu.text.DateFormat;
  * @since 4.3
  * 
  */
+@SuppressWarnings("restriction")
 public class ProgressInfoItem extends Composite {
 
 	@Inject
