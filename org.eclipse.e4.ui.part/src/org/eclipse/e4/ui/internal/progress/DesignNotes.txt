@@ -1,0 +1,15 @@
+3/22/14 - Need to find a way to break up the singleton pattern used here and provide
+the instances through the context.  Not sure at what level they should be inserted
+into the context - assuming the application level, but I can see how some perspectives
+may need their own Jobs.
+
+Current list of singletons:
+1. AnimationManager
+2. FinishedJobs
+3. ProgressManager
+4. ProgressViewUpdater
+
+The entire Jobs View depends on org.eclipse.core.runtime.jobs.Job so it may not be
+feasible to maintain separate lists of Jobs.
+
+LabelDecorator? 
