@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EMF Edit E4
+Bundle-SymbolicName: org.eclipse.emf.edit.e4
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.eclipse.e4.views.properties,
+ org.eclipse.emf.common.notify,
+ org.eclipse.emf.common.ui.celleditor,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.edit.domain,
+ org.eclipse.emf.edit.ui,
+ org.eclipse.emf.edit.ui.provider,
+ org.eclipse.jface.viewers,
+ org.eclipse.swt.widgets
+Export-Package: org.eclipse.emf.edit.e4.ui.provider
+Require-Bundle: org.eclipse.emf.edit.ui;bundle-version="2.10.0"
+Bundle-Vendor: CohesionForce
