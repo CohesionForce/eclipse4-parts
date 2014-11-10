@@ -24,6 +24,8 @@
    	<modules>
 		<module>org.eclipse.e4.ui.part</module>
 		<module>org.eclipse.emf.edit.e4</module>
+		<module>releng/org.eclipse.e4.ui.feature</module>
+		<module>releng/org.eclipse.e4.ui.site</module>
 	</modules>
 
 

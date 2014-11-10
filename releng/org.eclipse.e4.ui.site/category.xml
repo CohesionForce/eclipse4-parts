@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="org.eclipse.e4.ui.feature_1.0.0.qualifier.jar" id="org.eclipse.e4.ui.feature" version="1.0.0.qualifier">
+      <category name="org.eclipse.e4.ui.part"/>
+   </feature>
+   <category-def name="org.eclipse.e4.ui.part" label="Eclipse Parts"/>
+</site>
