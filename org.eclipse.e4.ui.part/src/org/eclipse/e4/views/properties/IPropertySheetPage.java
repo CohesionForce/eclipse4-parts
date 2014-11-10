@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.e4.views.properties;
 
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.part.IPage;
+import org.eclipse.jface.viewers.ISelection;
 
 /**
  * Interface for a property sheet page that appears in a property sheet view.
@@ -26,4 +28,7 @@ import org.eclipse.e4.ui.part.IPage;
  * @see PropertySheetPage
  */
 public interface IPropertySheetPage extends IPage {
+	
+	public void selectionChanged(ISelection selected, MPart part);
+
 }

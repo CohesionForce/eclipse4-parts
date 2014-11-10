@@ -25,8 +25,6 @@ import org.eclipse.e4.ui.part.MessagePage;
 import org.eclipse.e4.ui.part.PageBook;
 import org.eclipse.e4.ui.part.PageBookView;
 import org.eclipse.e4.ui.workbench.UIEvents;
-import org.eclipse.e4.views.properties.IPropertySheetPage;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.service.event.Event;
 import org.slf4j.Logger;
@@ -87,11 +85,6 @@ public class ContentOutline extends PageBookView {
 	 * Part that hosts the property sheet view
 	 */
 	private MPart contentOutlinePart;
-
-	/**
-	 * The initial selection when the content outline opens
-	 */
-	private ISelection bootstrapSelection;
 
 	/**
 	 * Creates a content outline view with no content outline pages.
@@ -248,15 +241,6 @@ public class ContentOutline extends PageBookView {
 			// change for empty selections)
 		}
 
-		// When the view is first opened, pass the selection to the page
-		if (bootstrapSelection != null) {
-			IPropertySheetPage page = (IPropertySheetPage) getCurrentPage();
-			if (page != null) {
-				// FIXME - Can't remember why this is commented
-				// page.selectionChanged(part, bootstrapSelection);
-			}
-			bootstrapSelection = null;
-		}
 	}
 
 	/**

@@ -111,9 +111,9 @@ public class ErrorInfo extends JobTreeElement {
 	}
 
 	public int compareTo(ErrorInfo arg0) {
-		if (arg0 instanceof ErrorInfo) {
+		if (arg0 != null) {
 			// Order ErrorInfo by time received
-			long otherTimestamp = ((ErrorInfo) arg0).timestamp;
+			long otherTimestamp = arg0.timestamp;
 			if (timestamp < otherTimestamp) {
 				return -1;
 			} else if (timestamp > otherTimestamp) {
@@ -122,6 +122,6 @@ public class ErrorInfo extends JobTreeElement {
 				return 0;
 			}
 		}
-		return super.compareTo(arg0);
+		return 0;
 	}
 }

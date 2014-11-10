@@ -172,7 +172,7 @@ public class FinishedJobs extends EventManager {
 				keptjobinfos.add(info);
 
 				long now = System.currentTimeMillis();
-				finishedTime.put(info, new Long(now));
+				finishedTime.put(info, Long.valueOf(now));
 
 				Object parent = info.getParent();
 				if (!(parent == null || keptjobinfos.contains(parent))) {
@@ -243,7 +243,7 @@ public class FinishedJobs extends EventManager {
 					if (element == info && !keptjobinfos.contains(tinfo)) {
 						toBeRemoved = findJobsToRemove(element);
 						keptjobinfos.add(tinfo);
-						finishedTime.put(tinfo, new Long(System
+						finishedTime.put(tinfo, Long.valueOf(System
 								.currentTimeMillis()));
 					}
 				}
@@ -347,9 +347,9 @@ public class FinishedJobs extends EventManager {
 	 * @return Date
 	 */
 	public Date getFinishDate(JobTreeElement jte) {
-		Object o = finishedTime.get(jte);
-		if (o instanceof Long) {
-			return new Date(((Long) o).longValue());
+		Long value = finishedTime.get(jte);
+		if (value != null) {
+			return new Date(value.longValue());
 		}
 		return null;
 	}

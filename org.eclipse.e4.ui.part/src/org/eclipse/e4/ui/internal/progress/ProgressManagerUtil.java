@@ -34,7 +34,7 @@ public class ProgressManagerUtil {
 	 * A constant used by the progress support to determine if an operation is
 	 * too short to show progress.
 	 */
-	public static long SHORT_OPERATION_TIME = 250;
+	public static final long SHORT_OPERATION_TIME = 250;
 
 	static final QualifiedName KEEP_PROPERTY = IProgressConstants.KEEP_PROPERTY;
 

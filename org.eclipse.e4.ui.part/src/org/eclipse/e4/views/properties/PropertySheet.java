@@ -273,8 +273,7 @@ public class PropertySheet extends PageBookView implements
 		if (bootstrapSelection != null) {
 			IPropertySheetPage page = (IPropertySheetPage) getCurrentPage();
 			if (page != null) {
-				// FIXME - Can't remember why this is commented
-				// page.selectionChanged(part, bootstrapSelection);
+				page.selectionChanged(bootstrapSelection, part);
 			}
 			bootstrapSelection = null;
 		}

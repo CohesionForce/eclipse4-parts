@@ -12,14 +12,10 @@
 
 package org.eclipse.e4.views.properties;
 
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.part.ISaveablePart;
 import org.eclipse.e4.ui.part.Page;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -58,7 +54,7 @@ import org.eclipse.swt.widgets.Control;
  * @see IPropertySource
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class PropertySheetPage extends Page implements IPropertySheetPage, IAdaptable {
+public class PropertySheetPage extends Page implements IPropertySheetPage {
 
     private PropertySheetViewer viewer;
     
@@ -67,41 +63,6 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
     private IPropertySheetEntry rootEntry;
 
     private IPropertySourceProvider provider;
-
-	private MPart sourcePart;
-
-	/**
-	 * Part listener which cleans up this page when the source part is closed.
-	 * This is hooked only when there is a source part.
-	 * 
-	 * @since 3.2
-	 */
-//	private class PartListener implements IPartListener {
-//		public void partActivated(IWorkbenchPart part) {
-//		}
-//
-//		public void partBroughtToTop(IWorkbenchPart part) {
-//		}
-//
-//		public void partClosed(IWorkbenchPart part) {
-//			if (sourcePart == part) {
-//				if (sourcePart != null)
-//					sourcePart.getSite().getPage().removePartListener(partListener);
-//				sourcePart = null;
-//				if (viewer != null && !viewer.getControl().isDisposed()) {
-//					viewer.setInput(new Object[0]);
-//				}
-//			}
-//		}
-//
-//		public void partDeactivated(IWorkbenchPart part) {
-//		}
-//
-//		public void partOpened(IWorkbenchPart part) {
-//		}
-//	}
-//	
-//	private PartListener partListener = new PartListener();
 
     /**
      * Creates a new property sheet page.
@@ -129,12 +90,6 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
             rootEntry = root;
         }
         viewer.setRootEntry(rootEntry);
-        // add a listener to track when the entry selection changes
-        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
-            	//FIXME - update this
-            }
-        });
         initDragAndDrop();
 
     }
@@ -145,44 +100,12 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
      */
     public void dispose() {
         super.dispose();
-        if (sourcePart != null) {
-//        	sourcePart.getSite().getPage().removePartListener(partListener);
-        }
         if (rootEntry != null) {
             rootEntry.dispose();
             rootEntry = null;
         }
     }
 
-    /**
-     * The <code>PropertySheetPage</code> implementation of this <code>IAdaptable</code> method
-     * handles the <code>ISaveablePart</code> adapter by delegating to the source part.
-     * 
-     * @since 3.2
-     */
-    @SuppressWarnings("rawtypes")
-	public Object getAdapter(Class adapter) {
-		if (ISaveablePart.class.equals(adapter)) {
-			return getSaveablePart();
-		}
-    	return null;
-    }
-    
-	/**
-	 * Returns an <code>ISaveablePart</code> that delegates to the source part
-	 * for the current page if it implements <code>ISaveablePart</code>, or
-	 * <code>null</code> otherwise.
-	 * 
-	 * @return an <code>ISaveablePart</code> or <code>null</code>
-	 * @since 3.2
-	 */
-	protected ISaveablePart getSaveablePart() {
-		if (sourcePart instanceof ISaveablePart) {
-			return (ISaveablePart) sourcePart;
-		}
-		return null;
-	}
-    
     /* (non-Javadoc)
      * Method declared on IPage (and Page).
      */
@@ -337,12 +260,6 @@ public class PropertySheetPage extends Page implements IPropertySheetPage, IAdap
 				viewer.setRootEntry(rootEntry);
 			}
         }
-	}
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

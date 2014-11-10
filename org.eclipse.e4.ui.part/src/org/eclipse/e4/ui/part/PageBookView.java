@@ -599,7 +599,7 @@ public abstract class PageBookView {
 			doDestroyPage(rec.part, rec);
 
 		} else {
-			mapPageToNumRecs.put(rec.page, new Integer(newCount));
+			mapPageToNumRecs.put(rec.page, Integer.valueOf(newCount));
 		}
 	}
 

@@ -8,14 +8,13 @@
 
 	<parent>
 		<version>1.0.0-SNAPSHOT</version>
-		<groupId>cohesionforce</groupId>
-		<artifactId>parent</artifactId>
-		<relativePath>../../pom.xml</relativePath>
+		<groupId>com.cohesionforce</groupId>
+		<artifactId>e4-parent</artifactId>
 	</parent>
-		<profiles>
+
+	<profiles>
 		<profile>
 			<id>findbugs</id>
-
 			<build>
 				<plugins>
 					<plugin>
@@ -40,5 +39,4 @@
 			</build>
 		</profile>
 	</profiles>
-	
 </project>
