@@ -242,25 +242,4 @@ public class ContentOutline extends PageBookView {
 		}
 
 	}
-
-	/**
-	 * The <code>ContentOutline</code> implementation of this
-	 * <code>PageBookView</code> method extends the behavior of its parent to
-	 * use the current page as a selection provider.
-	 * 
-	 * @param pageRec
-	 *            the page record containing the page to show
-	 */
-	// protected void showPageRec(PageRec pageRec) {
-	// IPageSite pageSite = getPageRec(pageRec.page);
-	// ISelectionProvider provider = pageSite.getSelectionProvider();
-	// if (provider == null && (pageRec.page instanceof IContentOutlinePage)) {
-	// // This means that the page did not set a provider during its
-	// initialization
-	// // so for backward compatibility we will set the page itself as the
-	// provider.
-	// pageSite.setSelectionProvider((IContentOutlinePage) pageRec.page);
-	// }
-	// super.showPageRec(pageRec);
-	// }
 }

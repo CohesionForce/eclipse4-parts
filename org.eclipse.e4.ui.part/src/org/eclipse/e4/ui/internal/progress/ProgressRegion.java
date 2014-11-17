@@ -11,6 +11,7 @@
 package org.eclipse.e4.ui.internal.progress;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.swt.SWT;
@@ -261,5 +262,11 @@ public class ProgressRegion {
 			if (animating)
 				animationItem.animationStart();
 		}
+	}
+	
+	@PreDestroy
+	public void destroy()
+	{
+		AnimationManager.getInstance().shutdown();
 	}
 }

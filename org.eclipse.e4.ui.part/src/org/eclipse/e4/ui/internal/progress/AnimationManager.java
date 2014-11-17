@@ -127,9 +127,18 @@ public class AnimationManager {
      */
     void dispose() {
         setAnimated(false);
+        animationUpdateJob.cancel();
         ProgressManager.getInstance().removeListener(listener);
     }
 
+    /**
+     * Method to stop the animation job and remove the listener from
+     * the ProgressManager.
+     */
+    public void shutdown() {
+    	this.dispose();
+    }
+    
     private IJobProgressManagerListener getProgressListener() {
         return new IJobProgressManagerListener() {
             Set<Job> jobs = Collections.synchronizedSet(new HashSet<Job>());

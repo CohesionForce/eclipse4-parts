@@ -15,7 +15,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -79,18 +78,18 @@ public class FilteredList extends Composite {
 	}
 
 	private class DefaultFilterMatcher implements FilterMatcher {
-		private Pattern p;
+		private StringMatcher fMatcher;
 
+		@Override
 		public void setFilter(String pattern, boolean ignoreCase,
 				boolean ignoreWildCards) {
-			p = Pattern.compile(pattern + '*', Pattern.CASE_INSENSITIVE);
+			fMatcher = new StringMatcher(pattern + '*', ignoreCase,
+					ignoreWildCards);
 		}
 
+		@Override
 		public boolean match(Object element) {
-			if (p != null) {
-				return p.matcher(fLabelProvider.getText(element)).matches();
-			}
-			return false;
+			return fMatcher.match(fLabelProvider.getText(element));
 		}
 	}
 
