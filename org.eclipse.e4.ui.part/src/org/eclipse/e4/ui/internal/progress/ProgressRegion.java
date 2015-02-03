@@ -207,7 +207,7 @@ public class ProgressRegion {
     	MPart part = partService.findPart("org.eclipse.e4.ui.progress");
     	if(part == null)
     	{
-    		part = (MPart) partService.createSharedPart("org.eclipse.e4.ui.progress");
+    		part = partService.createPart("org.eclipse.e4.ui.progress");
     	}
     	if(part != null)
     	{
